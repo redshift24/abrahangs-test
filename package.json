@@ -1,0 +1,20 @@
+{
+    "name": "abrahangs-web",
+    "version": "1.0.0",
+    "description": "Sub-max hangboard workout timer for climbers - Web version",
+    "main": "index.html",
+    "scripts": {
+        "start": "npx serve .",
+        "test": "echo \"Open index.html in a browser to test\""
+    },
+    "keywords": [
+        "hangboard",
+        "workout",
+        "timer",
+        "climbing",
+        "finger-strength",
+        "pwa"
+    ],
+    "author": "",
+    "license": "MIT"
+}

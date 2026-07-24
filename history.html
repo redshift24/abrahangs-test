@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ff9500">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Abrahangs">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <title>Abrahangs - History</title>
+    <link rel="preload" href="css/history.css" as="style">
+    <link rel="preload" href="js/history.js" as="script">
+    <link rel="stylesheet" href="css/history.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="app-header">
+            <div class="top-bar">
+                <button class="home-btn" onclick="goHome()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
+                <span class="header-title">History</span>
+                <div class="spacer"></div>
+            </div>
+        </div>
+
+        <div class="history-content">
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <h2>No workout history yet</h2>
+                <p>Complete a workout to see it here</p>
+            </div>
+
+            <div id="logs-list" class="logs-list"></div>
+        </div>
+
+        <div id="delete-bar" class="delete-bar" style="display: none;">
+            <button class="delete-btn" onclick="confirmDelete()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                Delete Selected
+            </button>
+        </div>
+    </div>
+
+    <script src="js/history.js"></script>
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registered:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>

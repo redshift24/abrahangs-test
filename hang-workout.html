@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ff9500">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Abrahangs">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <title>Abrahangs</title>
+    <link rel="preload" href="css/hang-workout.css" as="style">
+    <link rel="preload" href="js/hang-workout.js" as="script">
+    <link rel="stylesheet" href="css/hang-workout.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="app-header">
+            <h1>Abrahangs</h1>
+            <button class="info-btn" id="info-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div class="workout-content">
+            <div class="current-exercise">
+                <div class="exercise-image">
+                    <img id="exercise-image" src="pictures/Hang 1.JPG" alt="Hang exercise illustration" loading="lazy">
+                </div>
+                <h2 id="exercise-name">4 finger half crimp</h2>
+                <div class="exercise-sets-info">
+                    <span class="sets-badge" id="sets-badge">6 sets</span>
+                    <span class="duration-badge">7s per hang</span>
+                </div>
+            </div>
+
+            <div class="timer-section">
+                <div class="nav-buttons">
+                    <button class="nav-btn" id="prev-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="nav-btn" id="next-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    <button class="nav-btn history-nav-btn" id="history-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="phase-instruction" id="phase-instruction">Get ready!</div>
+                <div class="timer-display" id="timer-display">10</div>
+                <div class="set-indicator" id="set-indicator">Hang 1 of 6</div>
+                <div class="set-dots" id="set-dots"></div>
+            </div>
+
+            <div class="control-buttons">
+                <button class="control-btn play-btn" id="play-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </button>
+                <button class="control-btn pause-btn" id="pause-btn">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16"></rect>
+                        <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                </button>
+                <button class="control-btn stop-btn" id="stop-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                    </svg>
+                </button>
+                <button class="control-btn next-rep-btn" id="next-rep-btn">Next Rep</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="instructions-overlay" class="instructions-overlay">
+        <div class="instructions-modal">
+            <h2>How to use Abrahangs</h2>
+            <div class="instructions-content">
+                <p><strong>Aim:</strong> Get stronger by following this sub-max hangs program.</p>
+                <ul>
+                    <li>Load your fingers to roughly 20% of bodyweight (bend your knees with your feet on the ground,
+                        till fingers are roughly loaded)</li>
+                    <li>Do the full set once in the morning, and once in the evening, daily</li>
+                    <li>You should notice some good gains in ~3 weeks if you're consistent</li>
+                    <li>Shortcut method is to do it at the beginning of every climbing session</li>
+                </ul>
+            </div>
+            <p class="tap-hint">Tap anywhere to close</p>
+        </div>
+    </div>
+
+    <script src="js/hang-workout.js"></script>
+    <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registered:', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,462 @@
+:root {
+    --color-primary: #ff9500;
+    --color-success: #30d158;
+    --color-bg: #f2f2f7;
+    --color-text: #000;
+    --color-text-secondary: #8e8e93;
+    --color-white: #fff;
+    --radius-sm: 14px;
+    --radius-md: 20px;
+    --radius-lg: 50%;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.2);
+    --transition: all 0.2s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#app {
+    width: 100%;
+    max-width: 400px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 401px) {
+    #app {
+        min-height: auto;
+        height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    body {
+        padding: 0;
+    }
+}
+
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px 8px;
+    gap: 8px;
+}
+
+.app-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--color-text);
+}
+
+.info-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg);
+    border: none;
+    border-radius: 50%;
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.info-btn:hover {
+    background: #e5e5ea;
+}
+
+.info-btn:active {
+    transform: scale(0.95);
+}
+
+/* Instructions Overlay */
+.instructions-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+}
+
+.instructions-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.instructions-modal {
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    width: 100%;
+    max-width: 340px;
+    max-height: 80vh;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.instructions-modal h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--color-text);
+    text-align: center;
+}
+
+.instructions-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-text);
+}
+
+.instructions-content p {
+    margin-bottom: 12px;
+}
+
+.instructions-content ul {
+    margin: 12px 0;
+    padding-left: 20px;
+}
+
+.instructions-content li {
+    margin-bottom: 8px;
+}
+
+.tap-hint {
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-top: 16px;
+    margin-bottom: 0;
+}
+
+.workout-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px 20px;
+    text-align: center;
+}
+
+.current-exercise {
+    margin-bottom: 32px;
+    width: 100%;
+}
+
+.exercise-image {
+    width: 100%;
+    height: 220px;
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+#exercise-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}
+
+.history-nav-btn {
+    background: var(--color-bg) !important;
+    color: var(--color-text) !important;
+}
+
+.current-exercise h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--color-text);
+}
+
+.exercise-sets-info {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sets-badge,
+.duration-badge {
+    padding: 5px 12px;
+    background: var(--color-bg);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.timer-section {
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.phase-instruction {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    text-align: center;
+    min-height: 24px;
+}
+
+.set-indicator {
+    font-size: 15px;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.timer-display {
+    font-size: 72px;
+    font-weight: 700;
+    font-family: 'SF Mono', Monaco, monospace;
+    color: var(--color-primary);
+    line-height: 1;
+    margin-bottom: 20px;
+}
+
+.timer-display.green {
+    color: var(--color-success);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.nav-btn:not(:disabled):hover {
+    background: #e5e5ea;
+}
+
+.nav-btn:not(:disabled):active {
+    background: #d1d1d6;
+    transform: scale(0.95);
+}
+
+.set-dots {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.set-dot {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+    background: var(--color-white);
+    transition: all 0.3s;
+}
+
+.set-dot.completed {
+    background: var(--color-success);
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.set-dot.current {
+    background: var(--color-white);
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.control-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+.control-btn {
+    width: 64px;
+    height: 64px;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow);
+}
+
+.control-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.control-btn:not(:disabled):hover {
+    transform: scale(1.05);
+}
+
+.control-btn:not(:disabled):active {
+    transform: scale(0.95);
+}
+
+.play-btn {
+    background: var(--color-primary);
+    color: var(--color-text);
+}
+
+.play-btn:not(:disabled):hover {
+    background: #e68600;
+}
+
+.pause-btn {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.pause-btn:hover {
+    background: #e5e5ea;
+}
+
+.stop-btn {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+.stop-btn:hover {
+    background: #e5e5ea;
+}
+
+.next-rep-btn {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    width: 64px;
+    height: 64px;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: var(--shadow);
+}
+
+.next-rep-btn:hover {
+    background: #e5e5ea;
+}
+
+.next-rep-btn:active {
+    transform: scale(0.95);
+}
+
+/* Toast notification */
+.toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    background: var(--color-success);
+    color: var(--color-text);
+    padding: 20px 32px;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: var(--shadow-lg);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    #app {
+        max-width: 100%;
+    }
+
+    .timer-display {
+        font-size: 64px;
+    }
+
+    .control-btn {
+        width: 56px;
+        height: 56px;
+    }
+}
