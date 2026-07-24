@@ -18,6 +18,10 @@ let phase = 'hang5s';
 let completedReps = {};
 let wasRunningBeforeHidden = false;
 
+// Configurable times (defaults: 7s hang, 20s rest)
+let hangTime = 7;
+let restTime = 20;
+
 // Cache DOM elements
 let elements = {};
 
@@ -206,7 +210,7 @@ function advancePhase() {
     switch (phase) {
         case 'hang5s':
             phase = 'hang7s';
-            timeRemaining = 7;
+            timeRemaining = hangTime;
             break;
         case 'hang7s':
             completedReps[currentHangIndex][currentRep - 1] = true;
@@ -224,13 +228,13 @@ function advancePhase() {
                 return;
             }
             phase = 'rest';
-            timeRemaining = 20;
+            timeRemaining = restTime;
             break;
         case 'rest':
             if (currentRep < hangs[currentHangIndex].totalReps) {
                 currentRep += 1;
                 phase = 'hang7s';
-                timeRemaining = 7;
+                timeRemaining = hangTime;
             } else {
                 if (currentHangIndex < TOTAL_HANGS - 1) {
                     currentHangIndex += 1;
@@ -301,6 +305,53 @@ function hideInstructions() {
     }
 }
 
+// Settings modal functions
+function showSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    const hangInput = document.getElementById('hang-time-input');
+    const restInput = document.getElementById('rest-time-input');
+    if (overlay && hangInput && restInput) {
+        hangInput.value = hangTime;
+        restInput.value = restTime;
+        overlay.classList.add('show');
+    }
+}
+
+function hideSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    if (overlay) {
+        overlay.classList.remove('show');
+    }
+}
+
+function saveSettings() {
+    const hangInput = document.getElementById('hang-time-input');
+    const restInput = document.getElementById('rest-time-input');
+    if (hangInput && restInput) {
+        const newHangTime = parseInt(hangInput.value, 10);
+        const newRestTime = parseInt(restInput.value, 10);
+        if (newHangTime > 0 && newRestTime > 0) {
+            hangTime = newHangTime;
+            restTime = newRestTime;
+            localStorage.setItem('abrahangs_hang_time', hangTime);
+            localStorage.setItem('abrahangs_rest_time', restTime);
+            showToast('Settings saved!');
+        }
+    }
+    hideSettings();
+}
+
+function loadSettings() {
+    const storedHang = localStorage.getItem('abrahangs_hang_time');
+    const storedRest = localStorage.getItem('abrahangs_rest_time');
+    if (storedHang) {
+        hangTime = parseInt(storedHang, 10);
+    }
+    if (storedRest) {
+        restTime = parseInt(storedRest, 10);
+    }
+}
+
 // Set up event listeners for better reliability
 document.addEventListener('DOMContentLoaded', function () {
     cacheElements();
@@ -324,6 +375,25 @@ document.addEventListener('DOMContentLoaded', function () {
         instructionsOverlay.addEventListener('click', function (e) {
             hideInstructions();
         });
+    }
+
+    const settingsBtn = document.getElementById('settings-btn');
+    if (settingsBtn) {
+        settingsBtn.addEventListener('click', showSettings);
+    }
+
+    const settingsOverlay = document.getElementById('settings-overlay');
+    if (settingsOverlay) {
+        settingsOverlay.addEventListener('click', function (e) {
+            if (e.target === settingsOverlay) {
+                hideSettings();
+            }
+        });
+    }
+
+    const settingsSaveBtn = document.getElementById('settings-save-btn');
+    if (settingsSaveBtn) {
+        settingsSaveBtn.addEventListener('click', saveSettings);
     }
 
     // Page visibility handling - pause timer when tab is hidden
@@ -385,5 +455,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    loadSettings();
     updateUI();
 });

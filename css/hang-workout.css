@@ -46,7 +46,7 @@ body {
         border-radius: 0;
         margin: 0;
     }
-    
+
     body {
         padding: 0;
     }
@@ -56,7 +56,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px 20px 4px;
+    padding: 16px 20px 8px;
     gap: 8px;
 }
 
@@ -82,11 +82,34 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
+.settings-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--color-bg);
+    border: none;
+    border-radius: 50%;
+    color: var(--color-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
 .info-btn:hover {
     background: #e5e5ea;
 }
 
 .info-btn:active {
+    transform: scale(0.95);
+}
+
+.settings-btn:hover {
+    background: #e5e5ea;
+}
+
+.settings-btn:active {
     transform: scale(0.95);
 }
 
@@ -159,13 +182,111 @@ body {
     margin-bottom: 0;
 }
 
+/* Settings Overlay */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    padding: 20px;
+}
+
+.settings-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.settings-modal {
+    background: var(--color-white);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+}
+
+.settings-modal h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--color-text);
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.setting-item label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.setting-item input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d1d6;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--color-text);
+    background: var(--color-white);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.setting-item input:focus {
+    border-color: var(--color-primary);
+}
+
+.settings-save-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--color-primary);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.settings-save-btn:hover {
+    background: #e68600;
+}
+
+.settings-save-btn:active {
+    transform: scale(0.98);
+}
+
 .workout-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 12px 20px 20px;
+    justify-content: flex-start;
+    padding: 0px 20px 20px;
     text-align: center;
 }
 
@@ -176,7 +297,7 @@ body {
 
 .exercise-image {
     width: 100%;
-    height: 160px;
+    height: 200px;
     background: var(--color-bg);
     border-radius: var(--radius-md);
     display: flex;
