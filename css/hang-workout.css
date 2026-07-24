@@ -300,23 +300,6 @@ body {
     border-radius: var(--radius-md);
 }
 
-.hang-number-overlay {
-    position: absolute;
-    bottom: 8px;
-    left: 8px;
-    background: rgba(0, 0, 0, 0.6);
-    color: var(--color-white);
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1;
-}
-
 .current-exercise h2 {
     font-size: 20px;
     font-weight: 700;
