@@ -30,7 +30,7 @@ function cacheElements() {
         exerciseImage: document.getElementById('exercise-image'),
         exerciseName: document.getElementById('exercise-name'),
         setsBadge: document.getElementById('sets-badge'),
-        setIndicator: document.getElementById('set-indicator'),
+        hangNumberOverlay: document.getElementById('hang-number-overlay'),
         phaseInstruction: document.getElementById('phase-instruction'),
         timerDisplay: document.getElementById('timer-display'),
         setDots: document.getElementById('set-dots'),
@@ -114,9 +114,9 @@ function updateUI() {
         }
     }
 
-    // Update set indicator
-    if (elements.setIndicator) {
-        elements.setIndicator.textContent = `Hang ${currentHangIndex + 1} of ${TOTAL_HANGS}`;
+    // Update hang number overlay
+    if (elements.hangNumberOverlay) {
+        elements.hangNumberOverlay.textContent = currentHangIndex + 1;
     }
 
     // Update timer display
