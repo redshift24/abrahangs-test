@@ -538,17 +538,80 @@ body {
 }
 
 /* Responsive */
-@media (max-width: 400px) {
+@media (max-width: 360px) {
     #app {
         max-width: 100%;
     }
 
+    .app-header {
+        padding: 16px 16px 10px;
+    }
+
+    .app-header h1 {
+        font-size: 28px;
+    }
+
+    .exercise-image {
+        height: 140px;
+    }
+
     .timer-display {
-        font-size: 64px;
+        font-size: 56px;
     }
 
     .control-btn {
-        width: 56px;
-        height: 56px;
+        width: 52px;
+        height: 52px;
+    }
+
+    .set-dot {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+
+    .workout-content {
+        padding: 0px 16px 16px;
+    }
+
+    .current-exercise h2 {
+        font-size: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .app-header {
+        padding: 24px 24px 16px;
+    }
+
+    .app-header h1 {
+        font-size: 36px;
+    }
+
+    .exercise-image {
+        height: 220px;
+    }
+
+    .timer-display {
+        font-size: 80px;
+    }
+
+    .control-btn {
+        width: 72px;
+        height: 72px;
+    }
+
+    .set-dot {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+
+    .workout-content {
+        padding: 0px 24px 24px;
+    }
+
+    .current-exercise h2 {
+        font-size: 22px;
     }
 }
