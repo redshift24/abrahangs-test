@@ -352,6 +352,28 @@ function loadSettings() {
     }
 }
 
+// Wake Lock - prevent screen from turning off
+let wakeLock = null;
+
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock active');
+        }
+    } catch (err) {
+        console.log('Wake Lock error:', err);
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release();
+        wakeLock = null;
+        console.log('Wake Lock released');
+    }
+}
+
 // Set up event listeners for better reliability
 document.addEventListener('DOMContentLoaded', function () {
     cacheElements();
@@ -403,14 +425,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isRunning) {
                 pause();
             }
+            releaseWakeLock();
         } else {
             // Resume if it was running before
             if (wasRunningBeforeHidden) {
                 play();
                 wasRunningBeforeHidden = false;
             }
+            requestWakeLock();
         }
     });
+
+    // Request wake lock on load
+    requestWakeLock();
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function (e) {

@@ -56,8 +56,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 20px 8px;
-    gap: 8px;
+    padding: 20px 20px 12px;
+    position: relative;
 }
 
 .app-header h1 {
@@ -65,9 +65,17 @@ body {
     font-weight: 700;
     letter-spacing: -0.5px;
     color: var(--color-text);
+    margin-left: -20px;
 }
 
-.info-btn {
+.header-icons {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    gap: 4px;
+}
+
+.icon-btn {
     width: 32px;
     height: 32px;
     background: var(--color-bg);
@@ -82,34 +90,11 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.settings-btn {
-    width: 32px;
-    height: 32px;
-    background: var(--color-bg);
-    border: none;
-    border-radius: 50%;
-    color: var(--color-text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.info-btn:hover {
+.icon-btn:hover {
     background: #e5e5ea;
 }
 
-.info-btn:active {
-    transform: scale(0.95);
-}
-
-.settings-btn:hover {
-    background: #e5e5ea;
-}
-
-.settings-btn:active {
+.icon-btn:active {
     transform: scale(0.95);
 }
 
@@ -291,7 +276,7 @@ body {
 }
 
 .current-exercise {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     width: 100%;
 }
 
@@ -303,7 +288,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     position: relative;
     overflow: hidden;
 }
@@ -315,22 +300,48 @@ body {
     border-radius: var(--radius-md);
 }
 
-.history-nav-btn {
-    background: var(--color-bg) !important;
-    color: var(--color-text) !important;
-}
-
 .current-exercise h2 {
     font-size: 20px;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     color: var(--color-text);
 }
 
 .exercise-sets-info {
     display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
+}
+
+.nav-btn.small {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.nav-btn.small:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.nav-btn.small:not(:disabled):hover {
+    background: #e5e5ea;
+}
+
+.nav-btn.small:not(:disabled):active {
+    background: #d1d1d6;
+    transform: scale(0.95);
 }
 
 .sets-badge,
@@ -375,47 +386,6 @@ body {
 
 .timer-display.green {
     color: var(--color-success);
-}
-
-.nav-buttons {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.nav-btn {
-    width: 52px;
-    height: 52px;
-    padding: 0;
-    background: var(--color-bg);
-    color: var(--color-text);
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    transition: var(--transition);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.nav-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.nav-btn:not(:disabled):hover {
-    background: #e5e5ea;
-}
-
-.nav-btn:not(:disabled):active {
-    background: #d1d1d6;
-    transform: scale(0.95);
 }
 
 .set-dots {
