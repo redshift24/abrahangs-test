@@ -30,6 +30,7 @@ function cacheElements() {
         exerciseImage: document.getElementById('exercise-image'),
         exerciseName: document.getElementById('exercise-name'),
         setsBadge: document.getElementById('sets-badge'),
+        hangNumberOverlay: document.getElementById('hang-number-overlay'),
         phaseInstruction: document.getElementById('phase-instruction'),
         timerDisplay: document.getElementById('timer-display'),
         setDots: document.getElementById('set-dots'),
@@ -96,7 +97,7 @@ function updateUI() {
 
     // Update exercise info
     if (elements.exerciseName) {
-        elements.exerciseName.textContent = `${currentHangIndex + 1}. ${hang.name}`;
+        elements.exerciseName.textContent = hang.name;
     }
     if (elements.setsBadge) {
         elements.setsBadge.textContent = `${hang.totalReps} sets`;
@@ -111,6 +112,11 @@ function updateUI() {
         } else {
             elements.phaseInstruction.textContent = 'Rest';
         }
+    }
+
+    // Update hang number overlay
+    if (elements.hangNumberOverlay) {
+        elements.hangNumberOverlay.textContent = currentHangIndex + 1;
     }
 
     // Update timer display
