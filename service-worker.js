@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abrahangs-v1';
+const CACHE_NAME = 'abrahangs-v2';
 const urlsToCache = [
     './',
     './hang-workout.html',
@@ -22,7 +22,14 @@ self.addEventListener('install', event => {
             .then(cache => {
                 return cache.addAll(urlsToCache);
             })
+            .then(() => self.skipWaiting())
     );
+});
+
+self.addEventListener('message', event => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('fetch', event => {

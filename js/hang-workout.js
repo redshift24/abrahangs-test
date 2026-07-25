@@ -529,4 +529,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadSettings();
     updateUI();
+
+    // Reload page when a new service worker takes over
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+            window.location.reload();
+        });
+    }
 });
