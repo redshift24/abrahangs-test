@@ -25,11 +25,15 @@ let restTime = 20;
 // Auto continue setting
 let autoContinue = false;
 
+// Sound enabled setting
+let soundEnabled = false;
+
 // Audio state for countdown timers
 let countdownAudio = null;
 let audioLoaded = false;
 let audioTimeout = null;
 let audioStartTimestamp = 0;
+let selectedSound = 'Short Beep Countdown.mp3';
 
 // Cache DOM elements
 let elements = {};
@@ -183,8 +187,8 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         runTimer();
-        // Resume countdown audio if we're in the countdown phase (timeRemaining <= 3)
-        if (timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
+        // Resume countdown audio only during hang5s and rest phases
+        if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
             resumeCountdownAudio();
         }
         updateUI();
@@ -219,7 +223,7 @@ function runTimer() {
     timer = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining -= 1;
-            if (timeRemaining === COUNTDOWN_START_AT) {
+            if (timeRemaining === COUNTDOWN_START_AT && (phase === 'hang5s' || phase === 'rest')) {
                 startCountdownAudio();
             }
             updateUI();
@@ -342,11 +346,19 @@ function showSettings() {
     const hangInput = document.getElementById('hang-time-input');
     const restInput = document.getElementById('rest-time-input');
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
+    const soundSelect = document.getElementById('countdown-sound-select');
     if (overlay && hangInput && restInput) {
         hangInput.value = hangTime;
         restInput.value = restTime;
         if (autoContinueToggle) {
             autoContinueToggle.checked = autoContinue;
+        }
+        if (soundSelect) {
+            soundSelect.value = selectedSound;
+        }
+        const soundToggle = document.getElementById('sound-toggle');
+        if (soundToggle) {
+            soundToggle.checked = soundEnabled;
         }
         overlay.classList.add('show');
     }
@@ -366,6 +378,7 @@ function saveSettings() {
     const hangInput = document.getElementById('hang-time-input');
     const restInput = document.getElementById('rest-time-input');
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
+    const soundSelect = document.getElementById('countdown-sound-select');
     if (hangInput && restInput) {
         const newHangTime = parseInt(hangInput.value, 10);
         const newRestTime = parseInt(restInput.value, 10);
@@ -381,6 +394,16 @@ function saveSettings() {
     if (autoContinueToggle) {
         autoContinue = autoContinueToggle.checked;
         localStorage.setItem('abrahangs_auto_continue', autoContinue ? 'true' : 'false');
+    }
+    if (soundSelect) {
+        selectedSound = soundSelect.value;
+        localStorage.setItem('abrahangs_countdown_sound', selectedSound);
+        loadCountdownSound();
+    }
+    const soundToggle = document.getElementById('sound-toggle');
+    if (soundToggle) {
+        soundEnabled = soundToggle.checked;
+        localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
     }
     showToast('Settings saved!');
     hideSettings();
@@ -406,17 +429,28 @@ function loadSettings() {
     if (storedAutoContinue !== null) {
         autoContinue = storedAutoContinue === 'true';
     }
+    const storedSound = localStorage.getItem('abrahangs_countdown_sound');
+    if (storedSound) {
+        selectedSound = storedSound;
+    }
+    const storedSoundEnabled = localStorage.getItem('abrahangs_sound_enabled');
+    if (storedSoundEnabled !== null) {
+        soundEnabled = storedSoundEnabled === 'true';
+    }
 }
 
 // --- Countdown Audio ---
 
-const COUNTDOWN_SOUND = 'sounds/Short Beep Countdown.mp3';
 const COUNTDOWN_START_AT = 3;
+
+function getCountdownSoundPath() {
+    return 'sounds/' + selectedSound;
+}
 
 async function loadCountdownSound() {
     try {
         const audio = new Audio();
-        audio.src = COUNTDOWN_SOUND;
+        audio.src = getCountdownSoundPath();
         audio.preload = 'auto';
         audio.load();
         await new Promise((resolve, reject) => {
@@ -435,6 +469,9 @@ async function loadCountdownSound() {
 
 function startCountdownAudio() {
     if (!countdownAudio || !audioLoaded) return;
+    if (!soundEnabled) return;
+    // Only play during hang5s and rest phases
+    if (phase !== 'hang5s' && phase !== 'rest') return;
     // Stop any currently playing audio first
     stopCountdownAudio();
     try {
@@ -478,7 +515,9 @@ function pauseCountdownAudio() {
 
 function resumeCountdownAudio() {
     if (!countdownAudio || !audioLoaded) return;
-    // Only resume if we're still in the countdown phase (timeRemaining <= 3)
+    if (!soundEnabled) return;
+    // Only resume during hang5s and rest phases
+    if (phase !== 'hang5s' && phase !== 'rest') return;
     if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
     try {
         const playPromise = countdownAudio.play();
@@ -564,6 +603,23 @@ document.addEventListener('DOMContentLoaded', function () {
         autoContinueToggle.addEventListener('change', function () {
             autoContinue = autoContinueToggle.checked;
             localStorage.setItem('abrahangs_auto_continue', autoContinue ? 'true' : 'false');
+        });
+    }
+
+    const soundSelect = document.getElementById('countdown-sound-select');
+    if (soundSelect) {
+        soundSelect.addEventListener('change', function () {
+            selectedSound = soundSelect.value;
+            localStorage.setItem('abrahangs_countdown_sound', selectedSound);
+            loadCountdownSound();
+        });
+    }
+
+    const soundToggle = document.getElementById('sound-toggle');
+    if (soundToggle) {
+        soundToggle.addEventListener('change', function () {
+            soundEnabled = soundToggle.checked;
+            localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
         });
     }
 
