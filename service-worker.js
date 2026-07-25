@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abrahangs-v2';
+const CACHE_NAME = 'abrahangs-v3';
 const urlsToCache = [
     './',
     './hang-workout.html',
@@ -14,6 +14,9 @@ const urlsToCache = [
     './pictures/Hang 5.JPG',
     './pictures/Hang 6.JPG',
     './manifest.json',
+    './sounds/8-bit Countdown.mp3',
+    './sounds/Race Start Beeps.mp3',
+    './sounds/Robotic Countdown.mp3',
     './sounds/Short Beep Countdown.mp3'
 ];
 
