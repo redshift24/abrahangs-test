@@ -137,11 +137,3 @@ document.addEventListener('DOMContentLoaded', function () {
     loadLogs();
 });
 
-// Warn before leaving with selected logs
-window.addEventListener('beforeunload', function (e) {
-    if (selectedLogs.size > 0) {
-        e.preventDefault();
-        e.returnValue = 'You have selected logs for deletion. Are you sure you want to leave?';
-        return e.returnValue;
-    }
-});

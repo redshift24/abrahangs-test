@@ -678,15 +678,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Warn before leaving during active workout
-    window.addEventListener('beforeunload', function (e) {
-        if (isRunning) {
-            e.preventDefault();
-            e.returnValue = 'Workout in progress. Are you sure you want to leave?';
-            return e.returnValue;
-        }
-    });
-
     loadSettings();
     updateUI();
 
