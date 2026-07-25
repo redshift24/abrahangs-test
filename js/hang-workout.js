@@ -22,6 +22,9 @@ let wasRunningBeforeHidden = false;
 let hangTime = 7;
 let restTime = 20;
 
+// Auto continue setting
+let autoContinue = false;
+
 // Cache DOM elements
 let elements = {};
 
@@ -30,6 +33,7 @@ function cacheElements() {
         exerciseImage: document.getElementById('exercise-image'),
         exerciseName: document.getElementById('exercise-name'),
         setsBadge: document.getElementById('sets-badge'),
+        durationBadge: document.getElementById('duration-badge'),
         hangNumberOverlay: document.getElementById('hang-number-overlay'),
         phaseInstruction: document.getElementById('phase-instruction'),
         timerDisplay: document.getElementById('timer-display'),
@@ -40,6 +44,7 @@ function cacheElements() {
         pauseBtn: document.getElementById('pause-btn'),
         toast: document.getElementById('toast')
     };
+    elements.autoContinueToggle = document.getElementById('auto-continue-toggle');
 }
 
 function saveWorkoutLog() {
@@ -101,6 +106,9 @@ function updateUI() {
     }
     if (elements.setsBadge) {
         elements.setsBadge.textContent = `${hang.totalReps} sets`;
+    }
+    if (elements.durationBadge) {
+        elements.durationBadge.textContent = `${hangTime}s per hang`;
     }
 
     // Update phase instruction
@@ -241,9 +249,11 @@ function advancePhase() {
                     currentRep = 1;
                     phase = 'hang5s';
                     timeRemaining = 5;
-                    clearInterval(timer);
-                    timer = null;
-                    isRunning = false;
+                    if (!autoContinue) {
+                        clearInterval(timer);
+                        timer = null;
+                        isRunning = false;
+                    }
                 }
             }
             break;
@@ -310,10 +320,17 @@ function showSettings() {
     const overlay = document.getElementById('settings-overlay');
     const hangInput = document.getElementById('hang-time-input');
     const restInput = document.getElementById('rest-time-input');
+    const autoContinueToggle = document.getElementById('auto-continue-toggle');
     if (overlay && hangInput && restInput) {
         hangInput.value = hangTime;
         restInput.value = restTime;
+        if (autoContinueToggle) {
+            autoContinueToggle.checked = autoContinue;
+        }
         overlay.classList.add('show');
+    }
+    if (elements.durationBadge) {
+        elements.durationBadge.textContent = `${hangTime}s per hang`;
     }
 }
 
@@ -327,6 +344,7 @@ function hideSettings() {
 function saveSettings() {
     const hangInput = document.getElementById('hang-time-input');
     const restInput = document.getElementById('rest-time-input');
+    const autoContinueToggle = document.getElementById('auto-continue-toggle');
     if (hangInput && restInput) {
         const newHangTime = parseInt(hangInput.value, 10);
         const newRestTime = parseInt(restInput.value, 10);
@@ -335,10 +353,15 @@ function saveSettings() {
             restTime = newRestTime;
             localStorage.setItem('abrahangs_hang_time', hangTime);
             localStorage.setItem('abrahangs_rest_time', restTime);
-            showToast('Settings saved!');
         }
     }
+    if (autoContinueToggle) {
+        autoContinue = autoContinueToggle.checked;
+        localStorage.setItem('abrahangs_auto_continue', autoContinue ? 'true' : 'false');
+    }
+    showToast('Settings saved!');
     hideSettings();
+    updateUI();
 }
 
 function loadSettings() {
@@ -349,6 +372,10 @@ function loadSettings() {
     }
     if (storedRest) {
         restTime = parseInt(storedRest, 10);
+    }
+    const storedAutoContinue = localStorage.getItem('abrahangs_auto_continue');
+    if (storedAutoContinue !== null) {
+        autoContinue = storedAutoContinue === 'true';
     }
 }
 
@@ -416,6 +443,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsSaveBtn = document.getElementById('settings-save-btn');
     if (settingsSaveBtn) {
         settingsSaveBtn.addEventListener('click', saveSettings);
+    }
+
+    const autoContinueToggle = document.getElementById('auto-continue-toggle');
+    if (autoContinueToggle) {
+        autoContinueToggle.addEventListener('change', function () {
+            autoContinue = autoContinueToggle.checked;
+            localStorage.setItem('abrahangs_auto_continue', autoContinue ? 'true' : 'false');
+        });
     }
 
     // Page visibility handling - pause timer when tab is hidden
