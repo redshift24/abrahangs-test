@@ -25,6 +25,12 @@ let restTime = 20;
 // Auto continue setting
 let autoContinue = false;
 
+// Audio state for countdown timers
+let countdownAudio = null;
+let audioLoaded = false;
+let audioTimeout = null;
+let audioStartTimestamp = 0;
+
 // Cache DOM elements
 let elements = {};
 
@@ -177,6 +183,10 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         runTimer();
+        // Resume countdown audio if we're in the countdown phase (timeRemaining <= 3)
+        if (timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
+            resumeCountdownAudio();
+        }
         updateUI();
     }
 }
@@ -186,6 +196,7 @@ function pause() {
         clearInterval(timer);
         timer = null;
         isRunning = false;
+        pauseCountdownAudio();
         updateUI();
     }
 }
@@ -194,6 +205,7 @@ function stop() {
     clearInterval(timer);
     timer = null;
     isRunning = false;
+    stopCountdownAudio();
     currentHangIndex = 0;
     currentRep = 1;
     phase = 'hang5s';
@@ -207,8 +219,12 @@ function runTimer() {
     timer = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining -= 1;
+            if (timeRemaining === COUNTDOWN_START_AT) {
+                startCountdownAudio();
+            }
             updateUI();
         } else {
+            stopCountdownAudio();
             advancePhase();
         }
     }, 1000);
@@ -265,6 +281,7 @@ function nextRep() {
     clearInterval(timer);
     timer = null;
     isRunning = false;
+    stopCountdownAudio();
 
     if (currentRep < hangs[currentHangIndex].totalReps) {
         currentRep += 1;
@@ -286,6 +303,7 @@ function previousHang() {
         currentRep = 1;
         phase = 'hang5s';
         timeRemaining = 5;
+        stopCountdownAudio();
         updateUI();
     }
 }
@@ -296,6 +314,7 @@ function nextHang() {
         currentRep = 1;
         phase = 'hang5s';
         timeRemaining = 5;
+        stopCountdownAudio();
         updateUI();
     }
 }
@@ -384,6 +403,98 @@ function loadSettings() {
     const storedAutoContinue = localStorage.getItem('abrahangs_auto_continue');
     if (storedAutoContinue !== null) {
         autoContinue = storedAutoContinue === 'true';
+    }
+}
+
+// --- Countdown Audio ---
+
+const COUNTDOWN_SOUND = 'sounds/Short Beep Countdown.mp3';
+const COUNTDOWN_START_AT = 3;
+
+async function loadCountdownSound() {
+    try {
+        const audio = new Audio();
+        audio.src = COUNTDOWN_SOUND;
+        audio.preload = 'auto';
+        audio.load();
+        await new Promise((resolve, reject) => {
+            audio.addEventListener('canplaythrough', resolve, { once: true });
+            audio.addEventListener('error', reject, { once: true });
+            // Fallback timeout: resolve even if canplaythrough never fires
+            setTimeout(resolve, 3000);
+        });
+        countdownAudio = audio;
+        audioLoaded = true;
+    } catch (e) {
+        console.warn('Failed to load countdown sound:', e);
+        audioLoaded = false;
+    }
+}
+
+function startCountdownAudio() {
+    if (!countdownAudio || !audioLoaded) return;
+    // Stop any currently playing audio first
+    stopCountdownAudio();
+    try {
+        countdownAudio.currentTime = 0;
+        const playPromise = countdownAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Autoplay blocked — will retry on next user gesture
+            });
+        }
+        audioStartTimestamp = Date.now();
+        // Crop audio at 3 seconds (when timer reaches 0)
+        audioTimeout = setTimeout(() => {
+            stopCountdownAudio();
+        }, 3000);
+    } catch (e) {
+        console.warn('Audio playback failed:', e);
+    }
+}
+
+function stopCountdownAudio() {
+    if (audioTimeout) {
+        clearTimeout(audioTimeout);
+        audioTimeout = null;
+    }
+    if (!countdownAudio) return;
+    try {
+        countdownAudio.pause();
+        countdownAudio.currentTime = 0;
+    } catch (e) {
+        // Audio may already be in a bad state
+    }
+}
+
+function pauseCountdownAudio() {
+    if (!countdownAudio || countdownAudio.paused) return;
+    try {
+        countdownAudio.pause();
+    } catch (e) {
+        // Ignore
+    }
+}
+
+function resumeCountdownAudio() {
+    if (!countdownAudio || !audioLoaded) return;
+    // Only resume if we're still in the countdown phase (timeRemaining <= 3)
+    if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
+    try {
+        const playPromise = countdownAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => { });
+        }
+        // Reset the timeout to stop audio at the right time
+        const elapsed = (Date.now() - audioStartTimestamp) / 1000;
+        const remaining = COUNTDOWN_START_AT - elapsed;
+        if (remaining > 0) {
+            audioTimeout = setTimeout(() => {
+                stopCountdownAudio();
+            }, remaining * 1000);
+        }
+    } catch (e) {
+        console.warn('Audio resume failed:', e);
     }
 }
 
@@ -529,6 +640,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     loadSettings();
     updateUI();
+
+    // Preload countdown sound
+    loadCountdownSound();
 
     // Reload page when a new service worker takes over
     if ('serviceWorker' in navigator) {

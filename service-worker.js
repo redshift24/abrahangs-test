@@ -13,7 +13,8 @@ const urlsToCache = [
     './pictures/Hang 4.JPG',
     './pictures/Hang 5.JPG',
     './pictures/Hang 6.JPG',
-    './manifest.json'
+    './manifest.json',
+    './sounds/Short Beep Countdown.mp3'
 ];
 
 self.addEventListener('install', event => {
