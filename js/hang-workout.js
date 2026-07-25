@@ -348,12 +348,14 @@ function saveSettings() {
     if (hangInput && restInput) {
         const newHangTime = parseInt(hangInput.value, 10);
         const newRestTime = parseInt(restInput.value, 10);
-        if (newHangTime > 0 && newRestTime > 0) {
+        if (!isNaN(newHangTime) && newHangTime > 0 && newHangTime <= 60) {
             hangTime = newHangTime;
-            restTime = newRestTime;
-            localStorage.setItem('abrahangs_hang_time', hangTime);
-            localStorage.setItem('abrahangs_rest_time', restTime);
         }
+        if (!isNaN(newRestTime) && newRestTime > 0 && newRestTime <= 120) {
+            restTime = newRestTime;
+        }
+        localStorage.setItem('abrahangs_hang_time', hangTime);
+        localStorage.setItem('abrahangs_rest_time', restTime);
     }
     if (autoContinueToggle) {
         autoContinue = autoContinueToggle.checked;
@@ -368,10 +370,16 @@ function loadSettings() {
     const storedHang = localStorage.getItem('abrahangs_hang_time');
     const storedRest = localStorage.getItem('abrahangs_rest_time');
     if (storedHang) {
-        hangTime = parseInt(storedHang, 10);
+        const parsed = parseInt(storedHang, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+            hangTime = parsed;
+        }
     }
     if (storedRest) {
-        restTime = parseInt(storedRest, 10);
+        const parsed = parseInt(storedRest, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+            restTime = parsed;
+        }
     }
     const storedAutoContinue = localStorage.getItem('abrahangs_auto_continue');
     if (storedAutoContinue !== null) {
