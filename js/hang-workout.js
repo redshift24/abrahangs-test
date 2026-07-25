@@ -430,7 +430,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const instructionsOverlay = document.getElementById('instructions-overlay');
     if (instructionsOverlay) {
         instructionsOverlay.addEventListener('click', function (e) {
-            hideInstructions();
+            if (e.target === instructionsOverlay) {
+                hideInstructions();
+            }
         });
     }
 
