@@ -224,7 +224,6 @@ function runTimer() {
             }
             updateUI();
         } else {
-            stopCountdownAudio();
             advancePhase();
         }
     }, 1000);
@@ -235,6 +234,7 @@ function advancePhase() {
         case 'hang5s':
             phase = 'hang7s';
             timeRemaining = hangTime;
+            stopCountdownAudio();
             break;
         case 'hang7s':
             completedReps[currentHangIndex][currentRep - 1] = true;
@@ -259,12 +259,14 @@ function advancePhase() {
                 currentRep += 1;
                 phase = 'hang7s';
                 timeRemaining = hangTime;
+                stopCountdownAudio();
             } else {
                 if (currentHangIndex < TOTAL_HANGS - 1) {
                     currentHangIndex += 1;
                     currentRep = 1;
                     phase = 'hang5s';
                     timeRemaining = 5;
+                    stopCountdownAudio();
                     if (!autoContinue) {
                         clearInterval(timer);
                         timer = null;
@@ -444,10 +446,8 @@ function startCountdownAudio() {
             });
         }
         audioStartTimestamp = Date.now();
-        // Crop audio at 3 seconds (when timer reaches 0)
-        audioTimeout = setTimeout(() => {
-            stopCountdownAudio();
-        }, 3000);
+        // Audio continues past 0 — it will be stopped in advancePhase()
+        // when the hangtime phase begins displaying its first number.
     } catch (e) {
         console.warn('Audio playback failed:', e);
     }
@@ -485,14 +485,7 @@ function resumeCountdownAudio() {
         if (playPromise !== undefined) {
             playPromise.catch(() => { });
         }
-        // Reset the timeout to stop audio at the right time
-        const elapsed = (Date.now() - audioStartTimestamp) / 1000;
-        const remaining = COUNTDOWN_START_AT - elapsed;
-        if (remaining > 0) {
-            audioTimeout = setTimeout(() => {
-                stopCountdownAudio();
-            }, remaining * 1000);
-        }
+        // Audio will be stopped in advancePhase() when hangtime phase begins
     } catch (e) {
         console.warn('Audio resume failed:', e);
     }
