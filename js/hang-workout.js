@@ -111,7 +111,10 @@ function updateUI() {
     // Determine which hang's image to display
     let displayIndex = currentHangIndex;
     if (autoContinue && phase === 'rest' && currentHangIndex < TOTAL_HANGS - 1 && currentRep >= hangs[currentHangIndex].totalReps) {
-        displayIndex = currentHangIndex + 1;
+        const elapsed = Date.now() - restDotsTransitionTime;
+        if (elapsed >= 1500) {
+            displayIndex = currentHangIndex + 1;
+        }
     }
 
     // Update exercise image
