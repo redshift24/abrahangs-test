@@ -157,10 +157,11 @@ function updateUI() {
     // Update set dots
     if (elements.setDots) {
         const fragment = document.createDocumentFragment();
-        for (let i = 1; i <= hang.totalReps; i++) {
+        const dotsHang = hangs[displayIndex];
+        for (let i = 1; i <= dotsHang.totalReps; i++) {
             const dot = document.createElement('div');
             dot.className = 'set-dot';
-            if (completedReps[currentHangIndex][i - 1]) {
+            if (completedReps[displayIndex][i - 1]) {
                 dot.classList.add('completed');
                 dot.textContent = i;
             } else if (i === currentRep && (phase === 'hang7s' || phase === 'hang5s')) {
