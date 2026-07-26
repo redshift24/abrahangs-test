@@ -187,6 +187,7 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         runTimer();
+        requestWakeLock();
         // Resume countdown audio only during hang5s and rest phases
         if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
             resumeCountdownAudio();
@@ -200,6 +201,7 @@ function pause() {
         clearInterval(timer);
         timer = null;
         isRunning = false;
+        releaseWakeLock();
         pauseCountdownAudio();
         updateUI();
     }
@@ -209,6 +211,7 @@ function stop() {
     clearInterval(timer);
     timer = null;
     isRunning = false;
+    releaseWakeLock();
     stopCountdownAudio();
     currentHangIndex = 0;
     currentRep = 1;
@@ -275,6 +278,7 @@ function advancePhase() {
                         clearInterval(timer);
                         timer = null;
                         isRunning = false;
+                        releaseWakeLock();
                     }
                 }
             }
@@ -287,6 +291,7 @@ function nextRep() {
     clearInterval(timer);
     timer = null;
     isRunning = false;
+    releaseWakeLock();
     stopCountdownAudio();
 
     if (currentRep < hangs[currentHangIndex].totalReps) {
@@ -541,12 +546,21 @@ async function requestWakeLock() {
         }
     } catch (err) {
         console.log('Wake Lock error:', err);
+        if (err.name === 'NotFoundError') {
+            showToast('Screen wake lock not available on this device.', 3000);
+        } else if (err.name === 'NotAllowedError') {
+            showToast('Screen wake lock was denied. Check device settings.', 3000);
+        }
     }
 }
 
 function releaseWakeLock() {
     if (wakeLock !== null) {
-        wakeLock.release();
+        try {
+            wakeLock.release();
+        } catch (e) {
+            // Lock may have already been released by the OS
+        }
         wakeLock = null;
         console.log('Wake Lock released');
     }
@@ -630,19 +644,14 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isRunning) {
                 pause();
             }
-            releaseWakeLock();
         } else {
             // Resume if it was running before
             if (wasRunningBeforeHidden) {
                 play();
                 wasRunningBeforeHidden = false;
             }
-            requestWakeLock();
         }
     });
-
-    // Request wake lock on load
-    requestWakeLock();
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function (e) {
