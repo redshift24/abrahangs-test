@@ -25,6 +25,9 @@ let restTime = 20;
 // Auto continue setting
 let autoContinue = false;
 
+// Timestamp for delayed set-dots transition during rest period
+let restDotsTransitionTime = 0;
+
 // Sound enabled setting
 let soundEnabled = false;
 
@@ -157,11 +160,20 @@ function updateUI() {
     // Update set dots
     if (elements.setDots) {
         const fragment = document.createDocumentFragment();
-        const dotsHang = hangs[displayIndex];
+        // During rest period with autoContinue, delay dots transition by 1.5s
+        // so the user can see they've completed the current hang's reps
+        let dotsIndex = displayIndex;
+        if (autoContinue && phase === 'rest' && displayIndex > currentHangIndex) {
+            const elapsed = Date.now() - restDotsTransitionTime;
+            if (elapsed < 1500) {
+                dotsIndex = currentHangIndex;
+            }
+        }
+        const dotsHang = hangs[dotsIndex];
         for (let i = 1; i <= dotsHang.totalReps; i++) {
             const dot = document.createElement('div');
             dot.className = 'set-dot';
-            if (completedReps[displayIndex][i - 1]) {
+            if (completedReps[dotsIndex][i - 1]) {
                 dot.classList.add('completed');
                 dot.textContent = i;
             } else if (i === currentRep && (phase === 'hang7s' || phase === 'hang5s')) {
@@ -268,6 +280,9 @@ function advancePhase() {
             }
             phase = 'rest';
             timeRemaining = restTime;
+            if (autoContinue && currentHangIndex < TOTAL_HANGS - 1) {
+                restDotsTransitionTime = Date.now();
+            }
             break;
         case 'rest':
             if (currentRep < hangs[currentHangIndex].totalReps) {
