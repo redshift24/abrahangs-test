@@ -105,14 +105,21 @@ function initCompletedReps() {
 function updateUI() {
     const hang = hangs[currentHangIndex];
 
+    // Determine which hang's image to display
+    let displayIndex = currentHangIndex;
+    if (autoContinue && phase === 'rest' && currentHangIndex < TOTAL_HANGS - 1 && currentRep >= hangs[currentHangIndex].totalReps) {
+        displayIndex = currentHangIndex + 1;
+    }
+
     // Update exercise image
     if (elements.exerciseImage) {
-        elements.exerciseImage.src = `pictures/Hang ${currentHangIndex + 1}.JPG`;
+        elements.exerciseImage.src = `pictures/Hang ${displayIndex + 1}.JPG`;
     }
 
     // Update exercise info
+    const displayHang = hangs[displayIndex];
     if (elements.exerciseName) {
-        elements.exerciseName.textContent = hang.name;
+        elements.exerciseName.textContent = displayHang.name;
     }
     if (elements.setsBadge) {
         elements.setsBadge.textContent = `${hang.totalReps} sets`;
@@ -134,7 +141,7 @@ function updateUI() {
 
     // Update hang number overlay
     if (elements.hangNumberOverlay) {
-        elements.hangNumberOverlay.textContent = currentHangIndex + 1;
+        elements.hangNumberOverlay.textContent = displayIndex + 1;
     }
 
     // Update timer display
@@ -271,9 +278,15 @@ function advancePhase() {
                 if (currentHangIndex < TOTAL_HANGS - 1) {
                     currentHangIndex += 1;
                     currentRep = 1;
-                    phase = 'hang5s';
-                    timeRemaining = 5;
-                    stopCountdownAudio();
+                    if (autoContinue && currentHangIndex > 0) {
+                        phase = 'hang7s';
+                        timeRemaining = hangTime;
+                        stopCountdownAudio();
+                    } else {
+                        phase = 'hang5s';
+                        timeRemaining = 5;
+                        stopCountdownAudio();
+                    }
                     if (!autoContinue) {
                         clearInterval(timer);
                         timer = null;
@@ -301,8 +314,13 @@ function nextRep() {
     } else if (currentHangIndex < TOTAL_HANGS - 1) {
         currentHangIndex += 1;
         currentRep = 1;
-        phase = 'hang5s';
-        timeRemaining = 5;
+        if (autoContinue && currentHangIndex > 0) {
+            phase = 'hang7s';
+            timeRemaining = hangTime;
+        } else {
+            phase = 'hang5s';
+            timeRemaining = 5;
+        }
     }
 
     updateUI();
@@ -312,8 +330,13 @@ function previousHang() {
     if (currentHangIndex > 0) {
         currentHangIndex -= 1;
         currentRep = 1;
-        phase = 'hang5s';
-        timeRemaining = 5;
+        if (autoContinue && currentHangIndex > 0) {
+            phase = 'hang7s';
+            timeRemaining = hangTime;
+        } else {
+            phase = 'hang5s';
+            timeRemaining = 5;
+        }
         stopCountdownAudio();
         updateUI();
     }
@@ -323,8 +346,13 @@ function nextHang() {
     if (currentHangIndex < TOTAL_HANGS - 1) {
         currentHangIndex += 1;
         currentRep = 1;
-        phase = 'hang5s';
-        timeRemaining = 5;
+        if (autoContinue && currentHangIndex > 0) {
+            phase = 'hang7s';
+            timeRemaining = hangTime;
+        } else {
+            phase = 'hang5s';
+            timeRemaining = 5;
+        }
         stopCountdownAudio();
         updateUI();
     }
