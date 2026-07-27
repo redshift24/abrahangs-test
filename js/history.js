@@ -62,14 +62,17 @@ function renderLogs() {
         item.innerHTML = `
             <div class="log-checkbox">${checkboxIcon}</div>
             <div class="log-info">
-                <div class="log-name">${log.hangName}</div>
-                <div class="log-date">${dateStr}</div>
+                <div class="log-name"></div>
+                <div class="log-date"></div>
             </div>
             <div class="log-stats">
-                <div class="log-reps">${log.completedReps}/${log.totalReps}</div>
+                <div class="log-reps"></div>
                 <div class="log-label">reps</div>
             </div>
         `;
+        item.querySelector(".log-name").textContent = log.hangName;
+        item.querySelector(".log-date").textContent = dateStr;
+        item.querySelector(".log-reps").textContent = `${log.completedReps}/${log.totalReps}`;
 
         fragment.appendChild(item);
     });
@@ -136,4 +139,5 @@ document.addEventListener('DOMContentLoaded', function () {
     cacheElements();
     loadLogs();
 });
+
 
