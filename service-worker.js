@@ -16,7 +16,6 @@ const urlsToCache = [
     './manifest.json',
     './sounds/8-bit Countdown.mp3',
     './sounds/Race Start Beeps.mp3',
-    './sounds/Robotic Countdown.mp3',
     './sounds/Short Beep Countdown.mp3'
 ];
 

@@ -249,7 +249,7 @@ function runTimer() {
     timer = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining -= 1;
-            if (timeRemaining === COUNTDOWN_START_AT && (phase === 'hang5s' || phase === 'rest')) {
+            if (timeRemaining === COUNTDOWN_START_AT && (phase === 'hang5s' || phase === 'rest' || phase === 'hang7s')) {
                 startCountdownAudio();
             }
             updateUI();
@@ -281,6 +281,7 @@ function advancePhase() {
                 updateUI();
                 return;
             }
+            stopCountdownAudio();
             phase = 'rest';
             timeRemaining = restTime;
             if (autoContinue && currentHangIndex < TOTAL_HANGS - 1) {
@@ -522,8 +523,8 @@ async function loadCountdownSound() {
 function startCountdownAudio() {
     if (!countdownAudio || !audioLoaded) return;
     if (!soundEnabled) return;
-    // Only play during hang5s and rest phases
-    if (phase !== 'hang5s' && phase !== 'rest') return;
+    // Only play during hang5s, hang7s, and rest phases
+    if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     // Stop any currently playing audio first
     stopCountdownAudio();
     try {
@@ -568,8 +569,8 @@ function pauseCountdownAudio() {
 function resumeCountdownAudio() {
     if (!countdownAudio || !audioLoaded) return;
     if (!soundEnabled) return;
-    // Only resume during hang5s and rest phases
-    if (phase !== 'hang5s' && phase !== 'rest') return;
+    // Only resume during hang5s, hang7s, and rest phases
+    if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
     try {
         const playPromise = countdownAudio.play();
