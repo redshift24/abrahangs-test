@@ -273,7 +273,7 @@ function advancePhase() {
                 timer = null;
                 isRunning = false;
                 saveWorkoutLog();
-                showToast("You've finished hanging, congrats! Session logged.", 4000);
+                showToast("You've finished hanging! Session logged.", 4000);
                 setTimeout(() => {
                     stop();
                     showToast("Ready for Hang 1!", 3000);
