@@ -213,9 +213,9 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
+        loadAudioBuffer();
         runTimer();
         requestWakeLock();
-        // Resume countdown audio only during hang5s and rest phases
         if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
             resumeCountdownAudio();
         }
@@ -460,6 +460,7 @@ function saveSettings() {
     if (soundSelect) {
         selectedSound = soundSelect.value;
         localStorage.setItem('abrahangs_countdown_sound', selectedSound);
+        ensureAudioContext();
         loadAudioBuffer();
     }
     if (volumeSlider) {
@@ -564,9 +565,14 @@ async function loadAudioBuffer() {
     const path = getCountdownSoundPath();
     if (audioBuffers[path]) return;
     try {
+        if (!audioContext) {
+            ensureAudioContext();
+        }
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
         const response = await fetch(path);
         const arrayBuffer = await response.arrayBuffer();
-        if (!audioContext) ensureAudioContext();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         audioBuffers[path] = audioBuffer;
     } catch (e) {
@@ -867,9 +873,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateUI();
 
     updateCustomVolumeSlider(Math.round(volume * 100));
-
-    // Preload countdown sound
-    loadAudioBuffer();
 
     // Reload page when a new service worker takes over
     if ('serviceWorker' in navigator) {
