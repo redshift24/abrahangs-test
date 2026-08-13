@@ -40,6 +40,7 @@ let sourceStartTime = 0;
 let sourceOffset = 0;
 let selectedSound = 'Short Beep Countdown.mp3';
 let volume = 1.0;
+let preloadedArrayBuffer = null;
 
 // Cache DOM elements
 let elements = {};
@@ -213,10 +214,8 @@ async function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
-        if (audioContext && audioContext.state === 'suspended') {
-            await audioContext.resume();
-        }
-        unlockAudioContext();
+        await audioContext.resume();
+        await unlockAudioContext();
         await loadAudioBuffer();
         runTimer();
         requestWakeLock();
@@ -468,6 +467,7 @@ function saveSettings() {
         if (audioContext && audioContext.state === 'suspended') {
             audioContext.resume();
         }
+        preloadedArrayBuffer = null;
         loadAudioBuffer();
     }
     if (volumeSlider) {
@@ -568,10 +568,10 @@ function ensureAudioContext() {
     return true;
 }
 
-function unlockAudioContext() {
+async function unlockAudioContext() {
     if (!audioContext) return;
     if (audioContext.state === 'suspended') {
-        audioContext.resume();
+        await audioContext.resume();
     }
     if (audioContext.state === 'running') {
         try {
@@ -593,20 +593,36 @@ async function loadAudioBuffer() {
     const path = getCountdownSoundPath();
     if (audioBuffers[path]) return;
     try {
-        const response = await fetch(path);
-        if (!response.ok) {
-            console.warn('Failed to fetch audio file:', path, response.status);
-            return;
+        let arrayBuffer = preloadedArrayBuffer;
+        if (!arrayBuffer) {
+            const response = await fetch(path);
+            if (!response.ok) {
+                console.warn('Failed to fetch audio file:', path, response.status);
+                return;
+            }
+            arrayBuffer = await response.arrayBuffer();
         }
-        const arrayBuffer = await response.arrayBuffer();
         if (!audioContext) {
             console.warn('loadAudioBuffer: no audioContext');
             return;
         }
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         audioBuffers[path] = audioBuffer;
+        preloadedArrayBuffer = null;
     } catch (e) {
         console.warn('Failed to load audio buffer:', e);
+    }
+}
+
+async function preloadAudioBuffer() {
+    try {
+        const path = getCountdownSoundPath();
+        const response = await fetch(path);
+        if (response.ok) {
+            preloadedArrayBuffer = await response.arrayBuffer();
+        }
+    } catch (e) {
+        console.warn('Failed to preload audio buffer:', e);
     }
 }
 
