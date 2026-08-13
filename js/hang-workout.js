@@ -31,12 +31,15 @@ let restDotsTransitionTime = 0;
 // Sound enabled setting
 let soundEnabled = false;
 
-// Audio state for countdown timers
-let countdownAudio = null;
-let audioLoaded = false;
-let audioTimeout = null;
-let audioStartTimestamp = 0;
+// Web Audio API state
+let audioContext = null;
+let gainNode = null;
+let audioBuffers = {};
+let activeSource = null;
+let sourceStartTime = 0;
+let sourceOffset = 0;
 let selectedSound = 'Short Beep Countdown.mp3';
+let volume = 1.0;
 
 // Cache DOM elements
 let elements = {};
@@ -209,6 +212,7 @@ function updateUI() {
 function play() {
     if (!isRunning) {
         isRunning = true;
+        ensureAudioContext();
         runTimer();
         requestWakeLock();
         // Resume countdown audio only during hang5s and rest phases
@@ -400,6 +404,7 @@ function showSettings() {
     const restInput = document.getElementById('rest-time-input');
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
     const soundSelect = document.getElementById('countdown-sound-select');
+    const volumeSlider = document.getElementById('volume-slider');
     if (overlay && hangInput && restInput) {
         hangInput.value = hangTime;
         restInput.value = restTime;
@@ -408,6 +413,9 @@ function showSettings() {
         }
         if (soundSelect) {
             soundSelect.value = selectedSound;
+        }
+        if (volumeSlider) {
+            volumeSlider.value = Math.round(volume * 100);
         }
         const soundToggle = document.getElementById('sound-toggle');
         if (soundToggle) {
@@ -432,6 +440,7 @@ function saveSettings() {
     const restInput = document.getElementById('rest-time-input');
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
     const soundSelect = document.getElementById('countdown-sound-select');
+    const volumeSlider = document.getElementById('volume-slider');
     if (hangInput && restInput) {
         const newHangTime = parseInt(hangInput.value, 10);
         const newRestTime = parseInt(restInput.value, 10);
@@ -451,7 +460,14 @@ function saveSettings() {
     if (soundSelect) {
         selectedSound = soundSelect.value;
         localStorage.setItem('abrahangs_countdown_sound', selectedSound);
-        loadCountdownSound();
+        loadAudioBuffer();
+    }
+    if (volumeSlider) {
+        volume = parseInt(volumeSlider.value, 10) / 100;
+        localStorage.setItem('abrahangs_volume', volumeSlider.value);
+        if (gainNode) {
+            gainNode.gain.value = volume;
+        }
     }
     const soundToggle = document.getElementById('sound-toggle');
     if (soundToggle) {
@@ -490,9 +506,16 @@ function loadSettings() {
     if (storedSoundEnabled !== null) {
         soundEnabled = storedSoundEnabled === 'true';
     }
+    const storedVolume = localStorage.getItem('abrahangs_volume');
+    if (storedVolume !== null) {
+        const parsedVolume = parseInt(storedVolume, 10);
+        if (!isNaN(parsedVolume) && parsedVolume >= 0 && parsedVolume <= 100) {
+            volume = parsedVolume / 100;
+        }
+    }
 }
 
-// --- Countdown Audio ---
+// --- Countdown Audio (Web Audio API) ---
 
 const COUNTDOWN_START_AT = 3;
 
@@ -500,87 +523,92 @@ function getCountdownSoundPath() {
     return 'sounds/' + selectedSound;
 }
 
-async function loadCountdownSound() {
+function ensureAudioContext() {
+    if (!audioContext) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return false;
+        audioContext = new AudioContextClass();
+        gainNode = audioContext.createGain();
+        gainNode.connect(audioContext.destination);
+        gainNode.gain.value = volume;
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    return true;
+}
+
+async function loadAudioBuffer() {
+    const path = getCountdownSoundPath();
+    if (audioBuffers[path]) return;
     try {
-        const audio = new Audio();
-        audio.src = getCountdownSoundPath();
-        audio.preload = 'auto';
-        audio.load();
-        await new Promise((resolve, reject) => {
-            audio.addEventListener('canplaythrough', resolve, { once: true });
-            audio.addEventListener('error', reject, { once: true });
-            // Fallback timeout: resolve even if canplaythrough never fires
-            setTimeout(resolve, 3000);
-        });
-        countdownAudio = audio;
-        audioLoaded = true;
+        const response = await fetch(path);
+        const arrayBuffer = await response.arrayBuffer();
+        if (!audioContext) ensureAudioContext();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        audioBuffers[path] = audioBuffer;
     } catch (e) {
-        console.warn('Failed to load countdown sound:', e);
-        audioLoaded = false;
+        console.warn('Failed to load audio buffer:', e);
     }
 }
 
 function startCountdownAudio() {
-    if (!countdownAudio || !audioLoaded) return;
+    if (!gainNode) return;
     if (!soundEnabled) return;
-    // Only play during hang5s, hang7s, and rest phases
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
-    // Stop any currently playing audio first
     stopCountdownAudio();
+    const buffer = audioBuffers[getCountdownSoundPath()];
+    if (!buffer) return;
     try {
-        countdownAudio.currentTime = 0;
-        const playPromise = countdownAudio.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {
-                // Autoplay blocked — will retry on next user gesture
-            });
-        }
-        audioStartTimestamp = Date.now();
-        // Audio continues past 0 — it will be stopped in advancePhase()
-        // when the hangtime phase begins displaying its first number.
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(gainNode);
+        const offset = sourceOffset > 0 ? sourceOffset : 0;
+        source.start(0, offset);
+        activeSource = source;
+        sourceStartTime = audioContext.currentTime;
+        sourceOffset = 0;
+        source.onended = function () {
+            if (activeSource === source) {
+                activeSource = null;
+            }
+        };
     } catch (e) {
         console.warn('Audio playback failed:', e);
     }
 }
 
 function stopCountdownAudio() {
-    if (audioTimeout) {
-        clearTimeout(audioTimeout);
-        audioTimeout = null;
+    if (activeSource) {
+        try {
+            activeSource.onended = null;
+            activeSource.stop();
+        } catch (e) {
+            // ignore
+        }
+        activeSource = null;
     }
-    if (!countdownAudio) return;
-    try {
-        countdownAudio.pause();
-        countdownAudio.currentTime = 0;
-    } catch (e) {
-        // Audio may already be in a bad state
-    }
+    sourceOffset = 0;
 }
 
 function pauseCountdownAudio() {
-    if (!countdownAudio || countdownAudio.paused) return;
+    if (!activeSource || !audioContext) return;
     try {
-        countdownAudio.pause();
+        sourceOffset = audioContext.currentTime - sourceStartTime;
+        activeSource.onended = null;
+        activeSource.stop();
     } catch (e) {
-        // Ignore
+        // ignore
     }
+    activeSource = null;
 }
 
 function resumeCountdownAudio() {
-    if (!countdownAudio || !audioLoaded) return;
+    if (!gainNode) return;
     if (!soundEnabled) return;
-    // Only resume during hang5s, hang7s, and rest phases
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
-    try {
-        const playPromise = countdownAudio.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(() => { });
-        }
-        // Audio will be stopped in advancePhase() when hangtime phase begins
-    } catch (e) {
-        console.warn('Audio resume failed:', e);
-    }
+    startCountdownAudio();
 }
 
 // Wake Lock - prevent screen from turning off
@@ -673,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
         soundSelect.addEventListener('change', function () {
             selectedSound = soundSelect.value;
             localStorage.setItem('abrahangs_countdown_sound', selectedSound);
-            loadCountdownSound();
+            loadAudioBuffer();
         });
     }
 
@@ -682,6 +710,17 @@ document.addEventListener('DOMContentLoaded', function () {
         soundToggle.addEventListener('change', function () {
             soundEnabled = soundToggle.checked;
             localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
+        });
+    }
+
+    const volumeSlider = document.getElementById('volume-slider');
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', function () {
+            const newVolume = parseInt(volumeSlider.value, 10) / 100;
+            volume = newVolume;
+            if (gainNode) {
+                gainNode.gain.value = volume;
+            }
         });
     }
 
@@ -739,7 +778,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateUI();
 
     // Preload countdown sound
-    loadCountdownSound();
+    loadAudioBuffer();
 
     // Reload page when a new service worker takes over
     if ('serviceWorker' in navigator) {
