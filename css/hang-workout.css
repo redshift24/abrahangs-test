@@ -316,6 +316,7 @@ body {
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     outline: none;
+    touch-action: none;
 }
 
 .volume-slider:focus .volume-slider-thumb {

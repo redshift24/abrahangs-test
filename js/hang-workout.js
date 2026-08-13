@@ -774,6 +774,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         volumeSlider.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
             volumeSlider.setPointerCapture(e.pointerId);
             setVolumeFromPointer(e.clientX);
         });
