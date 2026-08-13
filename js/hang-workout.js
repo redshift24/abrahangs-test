@@ -522,7 +522,7 @@ function updateVolumeSliderFill(value) {
     const valueText = document.getElementById('volume-value');
     const percentage = value + '%';
     if (slider) {
-        slider.style.background = `linear-gradient(to right, var(--color-primary) 0%, var(--color-primary) ${percentage}, #d1d1d6 ${percentage}, #d1d1d6 100%)`;
+        slider.style.setProperty('--volume-percent', percentage);
     }
     if (valueText) {
         valueText.textContent = percentage;
