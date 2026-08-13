@@ -563,8 +563,7 @@ function startCountdownAudio() {
         const source = audioContext.createBufferSource();
         source.buffer = buffer;
         source.connect(gainNode);
-        const offset = sourceOffset > 0 ? sourceOffset : 0;
-        source.start(0, offset);
+        source.start(0, 0);
         activeSource = source;
         sourceStartTime = audioContext.currentTime;
         sourceOffset = 0;
@@ -608,7 +607,29 @@ function resumeCountdownAudio() {
     if (!soundEnabled) return;
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
-    startCountdownAudio();
+    if (!audioBuffers[getCountdownSoundPath()]) return;
+    try {
+        if (activeSource) {
+            activeSource.onended = null;
+            activeSource.stop();
+            activeSource = null;
+        }
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffers[getCountdownSoundPath()];
+        source.connect(gainNode);
+        const offset = sourceOffset > 0 ? sourceOffset : 0;
+        source.start(0, offset);
+        activeSource = source;
+        sourceStartTime = audioContext.currentTime;
+        sourceOffset = 0;
+        source.onended = function () {
+            if (activeSource === source) {
+                activeSource = null;
+            }
+        };
+    } catch (e) {
+        console.warn('Audio resume failed:', e);
+    }
 }
 
 // Wake Lock - prevent screen from turning off
@@ -718,6 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
         volumeSlider.addEventListener('input', function () {
             const newVolume = parseInt(volumeSlider.value, 10) / 100;
             volume = newVolume;
+            ensureAudioContext();
             if (gainNode) {
                 gainNode.gain.value = volume;
             }
