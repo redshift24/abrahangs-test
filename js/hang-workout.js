@@ -209,11 +209,15 @@ function updateUI() {
     }
 }
 
-function play() {
+async function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
-        loadAudioBuffer();
+        if (audioContext && audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
+        unlockAudioContext();
+        await loadAudioBuffer();
         runTimer();
         requestWakeLock();
         if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
@@ -461,6 +465,9 @@ function saveSettings() {
         selectedSound = soundSelect.value;
         localStorage.setItem('abrahangs_countdown_sound', selectedSound);
         ensureAudioContext();
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
         loadAudioBuffer();
     }
     if (volumeSlider) {
@@ -561,18 +568,41 @@ function ensureAudioContext() {
     return true;
 }
 
+function unlockAudioContext() {
+    if (!audioContext) return;
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    if (audioContext.state === 'running') {
+        try {
+            const buffer = audioContext.createBuffer(1, 1, 22050);
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.start();
+            source.onended = function () {
+                source.disconnect();
+            };
+        } catch (e) {
+            // ignore
+        }
+    }
+}
+
 async function loadAudioBuffer() {
     const path = getCountdownSoundPath();
     if (audioBuffers[path]) return;
     try {
-        if (!audioContext) {
-            ensureAudioContext();
-        }
-        if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-        }
         const response = await fetch(path);
+        if (!response.ok) {
+            console.warn('Failed to fetch audio file:', path, response.status);
+            return;
+        }
         const arrayBuffer = await response.arrayBuffer();
+        if (!audioContext) {
+            console.warn('loadAudioBuffer: no audioContext');
+            return;
+        }
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
         audioBuffers[path] = audioBuffer;
     } catch (e) {
@@ -581,12 +611,18 @@ async function loadAudioBuffer() {
 }
 
 function startCountdownAudio() {
-    if (!gainNode) return;
+    if (!gainNode) {
+        console.warn('startCountdownAudio: no gainNode');
+        return;
+    }
     if (!soundEnabled) return;
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     stopCountdownAudio();
     const buffer = audioBuffers[getCountdownSoundPath()];
-    if (!buffer) return;
+    if (!buffer) {
+        console.warn('startCountdownAudio: buffer not loaded for', getCountdownSoundPath());
+        return;
+    }
     try {
         const source = audioContext.createBufferSource();
         source.buffer = buffer;
@@ -631,11 +667,17 @@ function pauseCountdownAudio() {
 }
 
 function resumeCountdownAudio() {
-    if (!gainNode) return;
+    if (!gainNode) {
+        console.warn('resumeCountdownAudio: no gainNode');
+        return;
+    }
     if (!soundEnabled) return;
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     if (timeRemaining > COUNTDOWN_START_AT || timeRemaining <= 0) return;
-    if (!audioBuffers[getCountdownSoundPath()]) return;
+    if (!audioBuffers[getCountdownSoundPath()]) {
+        console.warn('resumeCountdownAudio: buffer not loaded for', getCountdownSoundPath());
+        return;
+    }
     try {
         if (activeSource) {
             activeSource.onended = null;
@@ -772,7 +814,6 @@ document.addEventListener('DOMContentLoaded', function () {
             x = Math.max(0, Math.min(x, rect.width));
             const percent = Math.round((x / rect.width) * 100);
             volume = Math.max(0, Math.min(100, percent)) / 100;
-            ensureAudioContext();
             if (gainNode) {
                 gainNode.gain.value = volume;
             }
@@ -810,7 +851,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 e.preventDefault();
                 const newPercent = Math.max(0, Math.min(100, parseInt(volumeSlider.getAttribute('data-volume') || '100', 10) + delta));
                 volume = newPercent / 100;
-                ensureAudioContext();
                 if (gainNode) {
                     gainNode.gain.value = volume;
                 }
