@@ -210,13 +210,13 @@ function updateUI() {
     }
 }
 
-async function play() {
+function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
-        await audioContext.resume();
-        await unlockAudioContext();
-        await loadAudioBuffer();
+        audioContext.resume();
+        unlockAudioContext();
+        loadAudioBuffer();
         runTimer();
         requestWakeLock();
         if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
@@ -568,10 +568,10 @@ function ensureAudioContext() {
     return true;
 }
 
-async function unlockAudioContext() {
+function unlockAudioContext() {
     if (!audioContext) return;
     if (audioContext.state === 'suspended') {
-        await audioContext.resume();
+        audioContext.resume();
     }
     if (audioContext.state === 'running') {
         try {
@@ -929,6 +929,8 @@ document.addEventListener('DOMContentLoaded', function () {
     updateUI();
 
     updateCustomVolumeSlider(Math.round(volume * 100));
+
+    preloadAudioBuffer();
 
     // Reload page when a new service worker takes over
     if ('serviceWorker' in navigator) {
