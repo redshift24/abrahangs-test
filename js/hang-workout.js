@@ -762,10 +762,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const setVolumeFromPointer = function (clientX) {
             const rect = volumeSlider.getBoundingClientRect();
-            const thumbRadius = 14;
             let x = clientX - rect.left;
-            x = Math.max(thumbRadius, Math.min(x, rect.width - thumbRadius));
-            const percent = Math.round((x / (rect.width - thumbRadius * 2)) * 100);
+            x = Math.max(0, Math.min(x, rect.width));
+            const percent = Math.round((x / rect.width) * 100);
             volume = Math.max(0, Math.min(100, percent)) / 100;
             ensureAudioContext();
             if (gainNode) {
