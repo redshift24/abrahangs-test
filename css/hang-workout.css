@@ -305,6 +305,13 @@ body {
 }
 
 /* Volume Slider */
+.volume-slider-container {
+    position: relative;
+    margin: 0 -14px;
+    padding: 0 14px;
+    overflow: visible;
+}
+
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -316,6 +323,8 @@ input[type="range"] {
     cursor: pointer;
     margin: 0;
     padding: 0;
+    border: none;
+    box-sizing: border-box;
     display: block;
 }
 
@@ -358,6 +367,12 @@ input[type="range"]::-moz-range-thumb {
     border: 2px solid var(--color-primary);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+}
+
+#volume-value {
+    font-weight: 400;
+    color: var(--color-text-secondary);
+    margin-left: 6px;
 }
 
 .settings-save-btn {
