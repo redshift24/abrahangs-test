@@ -415,8 +415,7 @@ function showSettings() {
             soundSelect.value = selectedSound;
         }
         if (volumeSlider) {
-            volumeSlider.value = Math.round(volume * 100);
-            updateVolumeSliderFill(volumeSlider.value);
+            updateCustomVolumeSlider(Math.round(volume * 100));
         }
         const soundToggle = document.getElementById('sound-toggle');
         if (soundToggle) {
@@ -464,12 +463,12 @@ function saveSettings() {
         loadAudioBuffer();
     }
     if (volumeSlider) {
-        volume = parseInt(volumeSlider.value, 10) / 100;
-        localStorage.setItem('abrahangs_volume', volumeSlider.value);
+        const sliderPercent = parseInt(volumeSlider.getAttribute('data-volume') || '100', 10);
+        volume = sliderPercent / 100;
+        localStorage.setItem('abrahangs_volume', sliderPercent);
         if (gainNode) {
             gainNode.gain.value = volume;
         }
-        updateVolumeSliderFill(volumeSlider.value);
     }
     const soundToggle = document.getElementById('sound-toggle');
     if (soundToggle) {
@@ -517,15 +516,24 @@ function loadSettings() {
     }
 }
 
-function updateVolumeSliderFill(value) {
+function updateCustomVolumeSlider(percent) {
     const slider = document.getElementById('volume-slider');
+    const fill = document.getElementById('volume-slider-fill');
+    const thumb = document.getElementById('volume-slider-thumb');
     const valueText = document.getElementById('volume-value');
-    const percentage = value + '%';
+    const clampedPercent = Math.max(0, Math.min(100, percent));
     if (slider) {
-        slider.style.setProperty('--volume-percent', percentage);
+        slider.setAttribute('data-volume', clampedPercent);
+        slider.setAttribute('aria-valuenow', clampedPercent);
+    }
+    if (fill) {
+        fill.style.width = clampedPercent + '%';
+    }
+    if (thumb) {
+        thumb.style.left = clampedPercent + '%';
     }
     if (valueText) {
-        valueText.textContent = percentage;
+        valueText.textContent = clampedPercent + '%';
     }
 }
 
@@ -750,14 +758,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const volumeSlider = document.getElementById('volume-slider');
     if (volumeSlider) {
-        volumeSlider.addEventListener('input', function () {
-            const newVolume = parseInt(volumeSlider.value, 10) / 100;
-            volume = newVolume;
+        updateCustomVolumeSlider(Math.round(volume * 100));
+
+        const setVolumeFromPointer = function (clientX) {
+            const rect = volumeSlider.getBoundingClientRect();
+            const thumbRadius = 14;
+            let x = clientX - rect.left;
+            x = Math.max(thumbRadius, Math.min(x, rect.width - thumbRadius));
+            const percent = Math.round((x / (rect.width - thumbRadius * 2)) * 100);
+            volume = Math.max(0, Math.min(100, percent)) / 100;
             ensureAudioContext();
             if (gainNode) {
                 gainNode.gain.value = volume;
             }
-            updateVolumeSliderFill(volumeSlider.value);
+            updateCustomVolumeSlider(Math.round(volume * 100));
+        };
+
+        volumeSlider.addEventListener('pointerdown', function (e) {
+            volumeSlider.setPointerCapture(e.pointerId);
+            setVolumeFromPointer(e.clientX);
+        });
+
+        volumeSlider.addEventListener('pointermove', function (e) {
+            if (e.buttons > 0 || volumeSlider.hasPointerCapture(e.pointerId)) {
+                setVolumeFromPointer(e.clientX);
+            }
+        });
+
+        volumeSlider.addEventListener('pointerup', function (e) {
+            volumeSlider.releasePointerCapture(e.pointerId);
+        });
+
+        volumeSlider.addEventListener('keydown', function (e) {
+            let delta = 0;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                delta = 1;
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                delta = -1;
+            } else if (e.key === 'Home') {
+                delta = -100;
+            } else if (e.key === 'End') {
+                delta = 100;
+            }
+            if (delta !== 0) {
+                e.preventDefault();
+                const newPercent = Math.max(0, Math.min(100, parseInt(volumeSlider.getAttribute('data-volume') || '100', 10) + delta));
+                volume = newPercent / 100;
+                ensureAudioContext();
+                if (gainNode) {
+                    gainNode.gain.value = volume;
+                }
+                updateCustomVolumeSlider(newPercent);
+            }
         });
     }
 
@@ -814,7 +866,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadSettings();
     updateUI();
 
-    updateVolumeSliderFill(volume * 100);
+    updateCustomVolumeSlider(Math.round(volume * 100));
 
     // Preload countdown sound
     loadAudioBuffer();
