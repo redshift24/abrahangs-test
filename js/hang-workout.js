@@ -599,7 +599,7 @@ function unlockAudioContext() {
 
 function initAudioSession() {
     if (navigator.audioSession) {
-        navigator.audioSession.type = 'playback';
+        navigator.audioSession.type = 'ambient';
     }
 }
 
