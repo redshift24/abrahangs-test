@@ -910,6 +910,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (clearCacheConfirm) {
         clearCacheConfirm.addEventListener('click', function() {
             document.getElementById('clear-cache-modal').classList.remove('show');
+            stop();
             clearCache();
         });
     }
