@@ -19,17 +19,17 @@ let completedReps = {};
 let wasRunningBeforeHidden = false;
 
 // Configurable times (defaults: 7s hang, 20s rest)
-let hangTime = 7;
+let hangTime = 10;
 let restTime = 20;
 
 // Auto continue setting
-let autoContinue = false;
+let autoContinue = true;
 
 // Timestamp for delayed set-dots transition during rest period
 let restDotsTransitionTime = 0;
 
 // Sound enabled setting
-let soundEnabled = false;
+let soundEnabled = true;
 
 // Web Audio API state
 let audioContext = null;
