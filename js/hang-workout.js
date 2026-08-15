@@ -219,8 +219,6 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
-        initAudioSession();
-        audioContext.resume();
         unlockAudioContext();
         loadAudioBuffer();
         runTimer();
@@ -471,9 +469,6 @@ function saveSettings() {
         selectedSound = soundSelect.value;
         localStorage.setItem('abrahangs_countdown_sound', selectedSound);
         ensureAudioContext();
-        if (audioContext && audioContext.state === 'suspended') {
-            audioContext.resume();
-        }
         preloadedArrayBuffer = null;
         loadAudioBuffer();
     }
@@ -603,6 +598,11 @@ function initAudioSession() {
     }
 }
 
+function setAudioSessionForBeep(active) {
+    if (!navigator.audioSession) return;
+    navigator.audioSession.type = active ? 'playback' : 'ambient';
+}
+
 async function loadAudioBuffer() {
     const path = getCountdownSoundPath();
     if (audioBuffers[path]) return;
@@ -649,9 +649,11 @@ function startCountdownAudio() {
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     stopCountdownAudio();
     stopVolumePreview();
+    setAudioSessionForBeep(true);
     const buffer = audioBuffers[getCountdownSoundPath()];
     if (!buffer) {
         console.warn('startCountdownAudio: buffer not loaded for', getCountdownSoundPath());
+        setAudioSessionForBeep(false);
         return;
     }
     try {
@@ -665,9 +667,11 @@ function startCountdownAudio() {
         source.onended = function () {
             if (activeSource === source) {
                 activeSource = null;
+                setAudioSessionForBeep(false);
             }
         };
     } catch (e) {
+        setAudioSessionForBeep(false);
         console.warn('Audio playback failed:', e);
     }
 }
@@ -683,6 +687,7 @@ function stopCountdownAudio() {
         activeSource = null;
     }
     sourceOffset = 0;
+    setAudioSessionForBeep(false);
 }
 
 function stopVolumePreview() {
@@ -751,6 +756,7 @@ function pauseCountdownAudio() {
         // ignore
     }
     activeSource = null;
+    setAudioSessionForBeep(false);
 }
 
 function resumeCountdownAudio() {
@@ -771,6 +777,7 @@ function resumeCountdownAudio() {
             activeSource.stop();
             activeSource = null;
         }
+        setAudioSessionForBeep(true);
         const source = audioContext.createBufferSource();
         source.buffer = audioBuffers[getCountdownSoundPath()];
         source.connect(gainNode);
@@ -782,9 +789,11 @@ function resumeCountdownAudio() {
         source.onended = function () {
             if (activeSource === source) {
                 activeSource = null;
+                setAudioSessionForBeep(false);
             }
         };
     } catch (e) {
+        setAudioSessionForBeep(false);
         console.warn('Audio resume failed:', e);
     }
 }
