@@ -400,6 +400,7 @@ body {
     align-items: center;
     gap: 8px;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .settings-header h2 {
@@ -410,12 +411,12 @@ body {
 }
 
 .settings-clear-btn {
-    padding: 6px 12px;
+    padding: 4px 10px;
     background: #e5e5ea;
     color: var(--color-text);
     border: none;
     border-radius: var(--radius-sm);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
