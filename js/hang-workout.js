@@ -814,6 +814,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (clearCacheCancel) {
         clearCacheCancel.addEventListener('click', function() {
             document.getElementById('clear-cache-modal').classList.remove('show');
+            stop();
         });
     }
 
@@ -1019,9 +1020,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     preloadAudioBuffer();
 
-    // Reload page when a new service worker takes over
+    // Reload page when a new service worker takes over. Skip on the reload
+    // right after clearCache() so the page only reloads once (avoids a loop).
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('controllerchange', function () {
+            if (sessionStorage.getItem('abrahangs_skipControllerReload') === 'true') {
+                sessionStorage.removeItem('abrahangs_skipControllerReload');
+                return;
+            }
             window.location.reload();
         });
     }
@@ -1040,6 +1046,7 @@ async function clearCache() {
                 await registration.unregister();
             }
         }
+        sessionStorage.setItem('abrahangs_skipControllerReload', 'true');
         window.location.reload();
     } catch (e) {
         console.warn('Clear cache failed:', e);
