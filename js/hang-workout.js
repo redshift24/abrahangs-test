@@ -42,6 +42,11 @@ let selectedSound = 'Short Beep Countdown.mp3';
 let volume = 1.0;
 let preloadedArrayBuffer = null;
 
+// Volume preview state (lets the user hear the volume while dragging the slider)
+let volumePreviewSource = null;
+let volumePreviewTimeout = null;
+let lastVolumePreview = 0;
+
 // Cache DOM elements
 let elements = {};
 
@@ -244,6 +249,7 @@ function stop() {
     isRunning = false;
     releaseWakeLock();
     stopCountdownAudio();
+    stopVolumePreview();
     currentHangIndex = 0;
     currentRep = 1;
     phase = 'hang5s';
@@ -642,6 +648,7 @@ function startCountdownAudio() {
     if (!soundEnabled) return;
     if (phase !== 'hang5s' && phase !== 'rest' && phase !== 'hang7s') return;
     stopCountdownAudio();
+    stopVolumePreview();
     const buffer = audioBuffers[getCountdownSoundPath()];
     if (!buffer) {
         console.warn('startCountdownAudio: buffer not loaded for', getCountdownSoundPath());
@@ -676,6 +683,62 @@ function stopCountdownAudio() {
         activeSource = null;
     }
     sourceOffset = 0;
+}
+
+function stopVolumePreview() {
+    if (volumePreviewSource) {
+        try {
+            volumePreviewSource.onended = null;
+            volumePreviewSource.stop();
+        } catch (e) {
+            // ignore
+        }
+        volumePreviewSource = null;
+    }
+    if (volumePreviewTimeout) {
+        clearTimeout(volumePreviewTimeout);
+        volumePreviewTimeout = null;
+    }
+}
+
+async function playVolumePreview() {
+    if (!audioContext || !gainNode) {
+        ensureAudioContext();
+    }
+    if (!audioContext || !gainNode) {
+        return;
+    }
+    await loadAudioBuffer();
+    const buffer = audioBuffers[getCountdownSoundPath()];
+    if (!buffer) {
+        return;
+    }
+    stopVolumePreview();
+    try {
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(gainNode);
+        gainNode.gain.value = volume;
+        source.start(0, 0, 1);
+        volumePreviewSource = source;
+        source.onended = function () {
+            if (volumePreviewSource === source) {
+                volumePreviewSource = null;
+            }
+        };
+        volumePreviewTimeout = setTimeout(function () {
+            if (volumePreviewSource === source) {
+                try {
+                    source.stop();
+                } catch (e) {
+                    // ignore
+                }
+                volumePreviewSource = null;
+            }
+        }, 1100);
+    } catch (e) {
+        console.warn('Volume preview playback failed:', e);
+    }
 }
 
 function pauseCountdownAudio() {
@@ -880,16 +943,25 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             volumeSlider.setPointerCapture(e.pointerId);
             setVolumeFromPointer(e.clientX);
+            lastVolumePreview = Date.now();
+            playVolumePreview();
         });
 
         volumeSlider.addEventListener('pointermove', function (e) {
             if (e.buttons > 0 || volumeSlider.hasPointerCapture(e.pointerId)) {
                 setVolumeFromPointer(e.clientX);
+                const now = Date.now();
+                if (now - lastVolumePreview >= 1000) {
+                    lastVolumePreview = now;
+                    playVolumePreview();
+                }
             }
         });
 
         volumeSlider.addEventListener('pointerup', function (e) {
             volumeSlider.releasePointerCapture(e.pointerId);
+            lastVolumePreview = Date.now();
+            playVolumePreview();
         });
 
         volumeSlider.addEventListener('keydown', function (e) {
@@ -911,6 +983,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     gainNode.gain.value = volume;
                 }
                 updateCustomVolumeSlider(newPercent);
+                const now = Date.now();
+                if (now - lastVolumePreview >= 1000) {
+                    lastVolumePreview = now;
+                    playVolumePreview();
+                }
             }
         });
     }
