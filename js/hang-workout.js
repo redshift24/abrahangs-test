@@ -1074,29 +1074,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const audioModeInfoIcon = document.getElementById('audio-mode-info-icon');
-    if (audioModeInfoIcon) {
-        audioModeInfoIcon.addEventListener('click', function() {
-            document.getElementById('audio-mode-info-overlay').classList.add('show');
-        });
-    }
-
-    const audioModeInfoClose = document.getElementById('audio-mode-info-close');
-    if (audioModeInfoClose) {
-        audioModeInfoClose.addEventListener('click', function() {
-            document.getElementById('audio-mode-info-overlay').classList.remove('show');
-        });
-    }
-
-    const audioModeInfoOverlay = document.getElementById('audio-mode-info-overlay');
-    if (audioModeInfoOverlay) {
-        audioModeInfoOverlay.addEventListener('click', function(e) {
-            if (e.target === audioModeInfoOverlay) {
-                audioModeInfoOverlay.classList.remove('show');
-            }
-        });
-    }
-
     // Page visibility handling - pause timer when tab is hidden
     document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
