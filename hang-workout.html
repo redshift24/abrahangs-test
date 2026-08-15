@@ -130,7 +130,10 @@
         <div id="settings-overlay" class="settings-overlay">
             <div class="settings-modal">
                 <div class="settings-header">
-                    <h2>Settings</h2>
+                    <div class="settings-title-group">
+                        <h2>Settings</h2>
+                        <span class="info-icon" id="sound-info-icon" role="button" aria-label="Audio information" tabindex="0">ⓘ</span>
+                    </div>
                     <button class="settings-clear-btn" id="settings-clear-btn">Clear cache</button>
                 </div>
                 <div class="settings-content">
@@ -167,20 +170,20 @@
                         </div>
                     </div>
                     <div class="setting-item toggle-setting">
-                        <div class="sound-label-row">
-                            <label for="sound-toggle">Sound</label>
-                            <span class="info-icon" id="sound-info-icon" role="button" aria-label="Audio information" tabindex="0">ⓘ</span>
-                        </div>
+                        <label for="sound-toggle">Sound</label>
                         <label class="toggle-switch">
                             <input type="checkbox" id="sound-toggle">
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                     <div class="setting-item">
-                        <label for="audio-session-select">Audio Mode</label>
+                        <div class="sound-label-row">
+                            <label for="audio-session-select">Audio Mode</label>
+                            <span class="info-icon" id="audio-mode-info-icon" role="button" aria-label="Audio mode information" tabindex="0">ⓘ</span>
+                        </div>
                         <select id="audio-session-select">
-                            <option value="ambient">Mix with Music (Silent-safe)</option>
-                            <option value="playback">Beeps Always On</option>
+                            <option value="ambient">Beeps and Music</option>
+                            <option value="playback">Beeps only - Silent mode</option>
                         </select>
                     </div>
                 </div>
@@ -200,6 +203,13 @@
             <div class="info-popup">
                 <p><strong>Save to Home Screen:</strong> Tap Share → Scroll down → Add to Home Screen.<br>&nbsp;Doing this will let you open the app from your home screen!</p>
                 <button class="info-popup-close" id="sound-info-close">Got it</button>
+            </div>
+        </div>
+
+        <div class="info-popup-overlay" id="audio-mode-info-overlay">
+            <div class="info-popup">
+                <p><strong>iPhone:</strong> You cannot have background music and the beeps in silent mode. If the phone is in silent mode, only the beeps will play, not any background music. In "Beeps and Music" mode both background music and beeps will play, but iPhones need to come out of silent mode. This does not affect Android users.</p>
+                <button class="info-popup-close" id="audio-mode-info-close">Got it</button>
             </div>
         </div>
 

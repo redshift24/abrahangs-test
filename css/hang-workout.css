@@ -395,6 +395,12 @@ body {
     margin-bottom: 20px;
 }
 
+.settings-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .settings-header h2 {
     font-size: 18px;
     font-weight: 700;
