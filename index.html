@@ -11,6 +11,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <script>
+        if (navigator.audioSession) {
+            navigator.audioSession.type = 'playback';
+        }
+    </script>
     <title>Abrahangs</title>
     <style>
         body {

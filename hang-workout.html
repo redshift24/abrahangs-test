@@ -12,6 +12,11 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <script>
+        if (navigator.audioSession) {
+            navigator.audioSession.type = 'playback';
+        }
+    </script>
     <title>Abrahangs</title>
     <link rel="preload" href="css/hang-workout.css" as="style">
     <link rel="preload" href="js/hang-workout.js" as="script">
@@ -124,7 +129,10 @@
 
         <div id="settings-overlay" class="settings-overlay">
             <div class="settings-modal">
-                <h2>Settings</h2>
+                <div class="settings-header">
+                    <h2>Settings</h2>
+                    <button class="settings-clear-btn" id="settings-clear-btn">Clear cache</button>
+                </div>
                 <div class="settings-content">
                     <div class="setting-item">
                         <label for="hang-time-input">Hang time (seconds)</label>
@@ -159,7 +167,10 @@
                         </div>
                     </div>
                     <div class="setting-item toggle-setting">
-                        <label for="sound-toggle">Sound</label>
+                        <div class="sound-label-row">
+                            <label for="sound-toggle">Sound</label>
+                            <span class="info-icon" id="sound-info-icon" role="button" aria-label="Audio information" tabindex="0">ⓘ</span>
+                        </div>
                         <label class="toggle-switch">
                             <input type="checkbox" id="sound-toggle">
                             <span class="toggle-slider"></span>
@@ -168,6 +179,31 @@
                 </div>
                 <button class="settings-save-btn" id="settings-save-btn">Save</button>
                 <p class="tap-hint">Tap outside to close</p>
+            </div>
+        </div>
+
+        <div class="info-popup-overlay" id="audio-info-overlay">
+            <div class="info-popup">
+                <p><strong>Safari:</strong> Turn off silent mode to hear beeps.<br><br><strong>Home Screen:</strong> Tap Share → Add to Home Screen. Beeps work with silent mode on.</p>
+                <button class="info-popup-close" id="audio-info-close">Got it</button>
+            </div>
+        </div>
+
+        <div class="info-popup-overlay" id="sound-info-overlay">
+            <div class="info-popup">
+                <p><strong>Safari:</strong> Turn off silent mode to hear beeps.<br><br><strong>Home Screen:</strong> Tap Share → Add to Home Screen. Beeps work with silent mode on.</p>
+                <button class="info-popup-close" id="sound-info-close">Got it</button>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="clear-cache-modal">
+            <div class="modal">
+                <h3>Clear All Data?</h3>
+                <p>This will delete all workout logs, settings, and cached files. This cannot be undone.</p>
+                <div class="modal-buttons">
+                    <button class="modal-btn cancel" id="clear-cache-cancel">Cancel</button>
+                    <button class="modal-btn confirm" id="clear-cache-confirm">Yes</button>
+                </div>
             </div>
         </div>
 

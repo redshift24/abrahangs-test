@@ -214,6 +214,7 @@ function play() {
     if (!isRunning) {
         isRunning = true;
         ensureAudioContext();
+        initAudioSession();
         audioContext.resume();
         unlockAudioContext();
         loadAudioBuffer();
@@ -554,6 +555,7 @@ function getCountdownSoundPath() {
 }
 
 function ensureAudioContext() {
+    initAudioSession();
     if (!audioContext) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return false;
@@ -586,6 +588,12 @@ function unlockAudioContext() {
         } catch (e) {
             // ignore
         }
+    }
+}
+
+function initAudioSession() {
+    if (navigator.audioSession) {
+        navigator.audioSession.type = 'playback';
     }
 }
 
@@ -795,6 +803,37 @@ document.addEventListener('DOMContentLoaded', function () {
         settingsSaveBtn.addEventListener('click', saveSettings);
     }
 
+    const clearCacheBtn = document.getElementById('settings-clear-btn');
+    if (clearCacheBtn) {
+        clearCacheBtn.addEventListener('click', function() {
+            document.getElementById('clear-cache-modal').classList.add('show');
+        });
+    }
+
+    const clearCacheCancel = document.getElementById('clear-cache-cancel');
+    if (clearCacheCancel) {
+        clearCacheCancel.addEventListener('click', function() {
+            document.getElementById('clear-cache-modal').classList.remove('show');
+        });
+    }
+
+    const clearCacheConfirm = document.getElementById('clear-cache-confirm');
+    if (clearCacheConfirm) {
+        clearCacheConfirm.addEventListener('click', function() {
+            document.getElementById('clear-cache-modal').classList.remove('show');
+            clearCache();
+        });
+    }
+
+    const clearCacheModal = document.getElementById('clear-cache-modal');
+    if (clearCacheModal) {
+        clearCacheModal.addEventListener('click', function(e) {
+            if (e.target === clearCacheModal) {
+                clearCacheModal.classList.remove('show');
+            }
+        });
+    }
+
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
     if (autoContinueToggle) {
         autoContinueToggle.addEventListener('change', function () {
@@ -875,6 +914,54 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function isIOS() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    }
+
+    if (isIOS() && !localStorage.getItem('abrahangs_audio_info_shown')) {
+        document.getElementById('audio-info-overlay').classList.add('show');
+        localStorage.setItem('abrahangs_audio_info_shown', 'true');
+    }
+
+    const audioInfoClose = document.getElementById('audio-info-close');
+    if (audioInfoClose) {
+        audioInfoClose.addEventListener('click', function() {
+            document.getElementById('audio-info-overlay').classList.remove('show');
+        });
+    }
+
+    const audioInfoOverlay = document.getElementById('audio-info-overlay');
+    if (audioInfoOverlay) {
+        audioInfoOverlay.addEventListener('click', function(e) {
+            if (e.target === audioInfoOverlay) {
+                audioInfoOverlay.classList.remove('show');
+            }
+        });
+    }
+
+    const soundInfoIcon = document.getElementById('sound-info-icon');
+    if (soundInfoIcon) {
+        soundInfoIcon.addEventListener('click', function() {
+            document.getElementById('sound-info-overlay').classList.add('show');
+        });
+    }
+
+    const soundInfoClose = document.getElementById('sound-info-close');
+    if (soundInfoClose) {
+        soundInfoClose.addEventListener('click', function() {
+            document.getElementById('sound-info-overlay').classList.remove('show');
+        });
+    }
+
+    const soundInfoOverlay = document.getElementById('sound-info-overlay');
+    if (soundInfoOverlay) {
+        soundInfoOverlay.addEventListener('click', function(e) {
+            if (e.target === soundInfoOverlay) {
+                soundInfoOverlay.classList.remove('show');
+            }
+        });
+    }
+
     // Page visibility handling - pause timer when tab is hidden
     document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
@@ -939,3 +1026,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+async function clearCache() {
+    try {
+        localStorage.clear();
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+        if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                await registration.unregister();
+            }
+        }
+        window.location.reload();
+    } catch (e) {
+        console.warn('Clear cache failed:', e);
+    }
+}
