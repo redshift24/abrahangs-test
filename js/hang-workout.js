@@ -40,6 +40,7 @@ let sourceStartTime = 0;
 let sourceOffset = 0;
 let selectedSound = 'Short Beep Countdown.mp3';
 let volume = 1.0;
+let audioSessionMode = 'ambient';
 let preloadedArrayBuffer = null;
 
 // Volume preview state (lets the user hear the volume while dragging the slider)
@@ -429,6 +430,10 @@ function showSettings() {
         if (soundToggle) {
             soundToggle.checked = soundEnabled;
         }
+        const audioSessionSelect = document.getElementById('audio-session-select');
+        if (audioSessionSelect) {
+            audioSessionSelect.value = audioSessionMode;
+        }
         overlay.classList.add('show');
     }
     if (elements.durationBadge) {
@@ -485,6 +490,12 @@ function saveSettings() {
         soundEnabled = soundToggle.checked;
         localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
     }
+    const audioSessionSelect = document.getElementById('audio-session-select');
+    if (audioSessionSelect) {
+        audioSessionMode = audioSessionSelect.value;
+        localStorage.setItem('abrahangs_audio_session_mode', audioSessionMode);
+        initAudioSession();
+    }
     showToast('Settings saved!');
     hideSettings();
     updateUI();
@@ -516,6 +527,10 @@ function loadSettings() {
     const storedSoundEnabled = localStorage.getItem('abrahangs_sound_enabled');
     if (storedSoundEnabled !== null) {
         soundEnabled = storedSoundEnabled === 'true';
+    }
+    const storedAudioSessionMode = localStorage.getItem('abrahangs_audio_session_mode');
+    if (storedAudioSessionMode) {
+        audioSessionMode = storedAudioSessionMode;
     }
     const storedVolume = localStorage.getItem('abrahangs_volume');
     if (storedVolume !== null) {
@@ -594,12 +609,13 @@ function unlockAudioContext() {
 
 function initAudioSession() {
     if (navigator.audioSession) {
-        navigator.audioSession.type = 'ambient';
+        navigator.audioSession.type = audioSessionMode;
     }
 }
 
 function setAudioSessionForBeep(active) {
     if (!navigator.audioSession) return;
+    if (audioSessionMode !== 'playback') return;
     navigator.audioSession.type = active ? 'playback' : 'ambient';
 }
 
@@ -929,6 +945,15 @@ document.addEventListener('DOMContentLoaded', function () {
         soundToggle.addEventListener('change', function () {
             soundEnabled = soundToggle.checked;
             localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
+        });
+    }
+
+    const audioSessionSelect = document.getElementById('audio-session-select');
+    if (audioSessionSelect) {
+        audioSessionSelect.addEventListener('change', function () {
+            audioSessionMode = audioSessionSelect.value;
+            localStorage.setItem('abrahangs_audio_session_mode', audioSessionMode);
+            initAudioSession();
         });
     }
 
