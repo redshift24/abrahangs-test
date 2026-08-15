@@ -719,7 +719,7 @@ async function playVolumePreview() {
         source.buffer = buffer;
         source.connect(gainNode);
         gainNode.gain.value = volume;
-        source.start(0, 0, 1);
+        source.start(0, 0, 0.5);
         volumePreviewSource = source;
         source.onended = function () {
             if (volumePreviewSource === source) {
@@ -735,7 +735,7 @@ async function playVolumePreview() {
                 }
                 volumePreviewSource = null;
             }
-        }, 1100);
+        }, 550);
     } catch (e) {
         console.warn('Volume preview playback failed:', e);
     }
@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (e.buttons > 0 || volumeSlider.hasPointerCapture(e.pointerId)) {
                 setVolumeFromPointer(e.clientX);
                 const now = Date.now();
-                if (now - lastVolumePreview >= 1000) {
+                if (now - lastVolumePreview >= 500) {
                     lastVolumePreview = now;
                     playVolumePreview();
                 }
@@ -984,7 +984,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 updateCustomVolumeSlider(newPercent);
                 const now = Date.now();
-                if (now - lastVolumePreview >= 1000) {
+                if (now - lastVolumePreview >= 500) {
                     lastVolumePreview = now;
                     playVolumePreview();
                 }
