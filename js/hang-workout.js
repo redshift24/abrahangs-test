@@ -43,6 +43,7 @@ let volume = 1.0;
 let audioSessionMode = 'ambient';
 let endBeepSource = null;
 let endBeepBuffer = null;
+let endBeepGainNode = null;
 let preloadedEndBeepArrayBuffer = null;
 let preloadedArrayBuffer = null;
 
@@ -583,6 +584,7 @@ function updateCustomVolumeSlider(percent) {
 // --- Countdown Audio (Web Audio API) ---
 
 const COUNTDOWN_START_AT = 3;
+const END_BEEP_VOLUME_MULTIPLIER = 1.5;
 
 function getCountdownSoundPath() {
     return 'sounds/' + selectedSound;
@@ -597,6 +599,9 @@ function ensureAudioContext() {
         gainNode = audioContext.createGain();
         gainNode.connect(audioContext.destination);
         gainNode.gain.value = volume;
+        endBeepGainNode = audioContext.createGain();
+        endBeepGainNode.gain.value = END_BEEP_VOLUME_MULTIPLIER;
+        endBeepGainNode.connect(gainNode);
     }
     if (audioContext.state === 'suspended') {
         audioContext.resume();
@@ -725,7 +730,7 @@ function stopCountdownAudio() {
 }
 
 function playEndBeep() {
-    if (!gainNode) {
+    if (!gainNode || !endBeepGainNode) {
         console.warn('playEndBeep: no gainNode');
         return;
     }
@@ -741,7 +746,7 @@ function playEndBeep() {
     try {
         const source = audioContext.createBufferSource();
         source.buffer = buffer;
-        source.connect(gainNode);
+        source.connect(endBeepGainNode);
         source.start(0, 0);
         endBeepSource = source;
         source.onended = function () {
