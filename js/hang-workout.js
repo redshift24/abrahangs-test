@@ -41,6 +41,9 @@ let sourceOffset = 0;
 let selectedSound = 'Short Beep Countdown.mp3';
 let volume = 1.0;
 let audioSessionMode = 'ambient';
+let endBeepSource = null;
+let endBeepBuffer = null;
+let preloadedEndBeepArrayBuffer = null;
 let preloadedArrayBuffer = null;
 
 // Volume preview state (lets the user hear the volume while dragging the slider)
@@ -222,10 +225,13 @@ function play() {
         ensureAudioContext();
         unlockAudioContext();
         loadAudioBuffer();
+        loadEndBeepBuffer();
         runTimer();
         requestWakeLock();
         if ((phase === 'hang5s' || phase === 'rest') && timeRemaining <= COUNTDOWN_START_AT && timeRemaining > 0) {
             resumeCountdownAudio();
+        } else if (phase === 'hang7s' && timeRemaining === 1) {
+            playEndBeep();
         }
         updateUI();
     }
@@ -238,6 +244,7 @@ function pause() {
         isRunning = false;
         releaseWakeLock();
         pauseCountdownAudio();
+        stopEndBeep();
         updateUI();
     }
 }
@@ -248,6 +255,7 @@ function stop() {
     isRunning = false;
     releaseWakeLock();
     stopCountdownAudio();
+    stopEndBeep();
     stopVolumePreview();
     currentHangIndex = 0;
     currentRep = 1;
@@ -262,8 +270,11 @@ function runTimer() {
     timer = setInterval(() => {
         if (timeRemaining > 0) {
             timeRemaining -= 1;
-            if (timeRemaining === COUNTDOWN_START_AT && (phase === 'hang5s' || phase === 'rest' || phase === 'hang7s')) {
+            if (timeRemaining === COUNTDOWN_START_AT && (phase === 'hang5s' || phase === 'rest')) {
                 startCountdownAudio();
+            }
+            if (timeRemaining === 0 && phase === 'hang7s') {
+                playEndBeep();
             }
             updateUI();
         } else {
@@ -278,6 +289,7 @@ function advancePhase() {
             phase = 'hang7s';
             timeRemaining = hangTime;
             stopCountdownAudio();
+            stopEndBeep();
             break;
         case 'hang7s':
             completedReps[currentHangIndex][currentRep - 1] = true;
@@ -307,6 +319,7 @@ function advancePhase() {
                 phase = 'hang7s';
                 timeRemaining = hangTime;
                 stopCountdownAudio();
+                stopEndBeep();
             } else {
                 if (currentHangIndex < TOTAL_HANGS - 1) {
                     currentHangIndex += 1;
@@ -315,10 +328,12 @@ function advancePhase() {
                         phase = 'hang7s';
                         timeRemaining = hangTime;
                         stopCountdownAudio();
+                        stopEndBeep();
                     } else {
                         phase = 'hang5s';
                         timeRemaining = 5;
                         stopCountdownAudio();
+                        stopEndBeep();
                     }
                     if (!autoContinue) {
                         clearInterval(timer);
@@ -339,6 +354,7 @@ function nextRep() {
     isRunning = false;
     releaseWakeLock();
     stopCountdownAudio();
+    stopEndBeep();
 
     if (currentRep < hangs[currentHangIndex].totalReps) {
         currentRep += 1;
@@ -371,6 +387,7 @@ function previousHang() {
             timeRemaining = 5;
         }
         stopCountdownAudio();
+        stopEndBeep();
         updateUI();
     }
 }
@@ -387,6 +404,7 @@ function nextHang() {
             timeRemaining = 5;
         }
         stopCountdownAudio();
+        stopEndBeep();
         updateUI();
     }
 }
@@ -704,6 +722,86 @@ function stopCountdownAudio() {
     }
     sourceOffset = 0;
     setAudioSessionForBeep(false);
+}
+
+function playEndBeep() {
+    if (!gainNode) {
+        console.warn('playEndBeep: no gainNode');
+        return;
+    }
+    if (!soundEnabled) return;
+    stopEndBeep();
+    setAudioSessionForBeep(true);
+    const buffer = endBeepBuffer;
+    if (!buffer) {
+        console.warn('playEndBeep: buffer not loaded');
+        setAudioSessionForBeep(false);
+        return;
+    }
+    try {
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(gainNode);
+        source.start(0, 0);
+        endBeepSource = source;
+        source.onended = function () {
+            if (endBeepSource === source) {
+                endBeepSource = null;
+                setAudioSessionForBeep(false);
+            }
+        };
+    } catch (e) {
+        setAudioSessionForBeep(false);
+        console.warn('End beep playback failed:', e);
+    }
+}
+
+function stopEndBeep() {
+    if (endBeepSource) {
+        try {
+            endBeepSource.onended = null;
+            endBeepSource.stop();
+        } catch (e) {
+            // ignore
+        }
+        endBeepSource = null;
+    }
+    setAudioSessionForBeep(false);
+}
+
+async function loadEndBeepBuffer() {
+    if (endBeepBuffer) return;
+    try {
+        let arrayBuffer = preloadedEndBeepArrayBuffer;
+        if (!arrayBuffer) {
+            const response = await fetch('sounds/Piano Beep.mp3');
+            if (!response.ok) {
+                console.warn('Failed to fetch end beep file:', response.status);
+                return;
+            }
+            arrayBuffer = await response.arrayBuffer();
+        }
+        if (!audioContext) {
+            console.warn('loadEndBeepBuffer: no audioContext');
+            return;
+        }
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+        endBeepBuffer = audioBuffer;
+        preloadedEndBeepArrayBuffer = null;
+    } catch (e) {
+        console.warn('Failed to load end beep buffer:', e);
+    }
+}
+
+async function preloadEndBeepBuffer() {
+    try {
+        const response = await fetch('sounds/Piano Beep.mp3');
+        if (response.ok) {
+            preloadedEndBeepArrayBuffer = await response.arrayBuffer();
+        }
+    } catch (e) {
+        console.warn('Failed to preload end beep buffer:', e);
+    }
 }
 
 function stopVolumePreview() {
@@ -1098,6 +1196,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    const audioModeSection = document.getElementById('audio-mode-section');
+    if (audioModeSection && !isIOS()) {
+        audioModeSection.style.display = 'none';
+    }
+
     // Page visibility handling - pause timer when tab is hidden
     document.addEventListener('visibilitychange', function () {
         if (document.hidden) {
@@ -1154,6 +1257,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCustomVolumeSlider(Math.round(volume * 100));
 
     preloadAudioBuffer();
+    preloadEndBeepBuffer();
 
     // Reload page when a new service worker takes over. Skip on the reload
     // right after clearCache() so the page only reloads once (avoids a loop).
