@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abrahangs-v7';
+const CACHE_NAME = 'abrahangs-v8';
 const urlsToCache = [
     './',
     './hang-workout.html',
@@ -16,7 +16,8 @@ const urlsToCache = [
     './manifest.json',
     './sounds/8-bit Countdown.mp3',
     './sounds/Race Start Beeps.mp3',
-    './sounds/Short Beep Countdown.mp3'
+    './sounds/Short Beep Countdown.mp3',
+    './sounds/Piano Beep.mp3'
 ];
 
 self.addEventListener('install', event => {
