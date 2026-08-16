@@ -991,14 +991,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const clearCacheBtn = document.getElementById('settings-clear-btn');
     if (clearCacheBtn) {
-        clearCacheBtn.addEventListener('click', function() {
+        clearCacheBtn.addEventListener('click', function () {
             document.getElementById('clear-cache-modal').classList.add('show');
         });
     }
 
     const clearCacheCancel = document.getElementById('clear-cache-cancel');
     if (clearCacheCancel) {
-        clearCacheCancel.addEventListener('click', function() {
+        clearCacheCancel.addEventListener('click', function () {
             document.getElementById('clear-cache-modal').classList.remove('show');
             stop();
         });
@@ -1006,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const clearCacheConfirm = document.getElementById('clear-cache-confirm');
     if (clearCacheConfirm) {
-        clearCacheConfirm.addEventListener('click', function() {
+        clearCacheConfirm.addEventListener('click', function () {
             document.getElementById('clear-cache-modal').classList.remove('show');
             stop();
             clearCache();
@@ -1015,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const clearCacheModal = document.getElementById('clear-cache-modal');
     if (clearCacheModal) {
-        clearCacheModal.addEventListener('click', function(e) {
+        clearCacheModal.addEventListener('click', function (e) {
             if (e.target === clearCacheModal) {
                 clearCacheModal.classList.remove('show');
             }
@@ -1136,14 +1136,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const audioInfoClose = document.getElementById('audio-info-close');
     if (audioInfoClose) {
-        audioInfoClose.addEventListener('click', function() {
+        audioInfoClose.addEventListener('click', function () {
             document.getElementById('audio-info-overlay').classList.remove('show');
         });
     }
 
     const audioInfoOverlay = document.getElementById('audio-info-overlay');
     if (audioInfoOverlay) {
-        audioInfoOverlay.addEventListener('click', function(e) {
+        audioInfoOverlay.addEventListener('click', function (e) {
             if (e.target === audioInfoOverlay) {
                 audioInfoOverlay.classList.remove('show');
             }
@@ -1152,21 +1152,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const soundInfoIcon = document.getElementById('sound-info-icon');
     if (soundInfoIcon) {
-        soundInfoIcon.addEventListener('click', function() {
+        soundInfoIcon.addEventListener('click', function () {
             document.getElementById('sound-info-overlay').classList.add('show');
         });
     }
 
     const soundInfoClose = document.getElementById('sound-info-close');
     if (soundInfoClose) {
-        soundInfoClose.addEventListener('click', function() {
+        soundInfoClose.addEventListener('click', function () {
             document.getElementById('sound-info-overlay').classList.remove('show');
         });
     }
 
     const soundInfoOverlay = document.getElementById('sound-info-overlay');
     if (soundInfoOverlay) {
-        soundInfoOverlay.addEventListener('click', function(e) {
+        soundInfoOverlay.addEventListener('click', function (e) {
             if (e.target === soundInfoOverlay) {
                 soundInfoOverlay.classList.remove('show');
             }
@@ -1175,21 +1175,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const audioModeInfoIcon = document.getElementById('audio-mode-info-icon');
     if (audioModeInfoIcon) {
-        audioModeInfoIcon.addEventListener('click', function() {
+        audioModeInfoIcon.addEventListener('click', function () {
             document.getElementById('audio-mode-info-overlay').classList.add('show');
         });
     }
 
     const audioModeInfoClose = document.getElementById('audio-mode-info-close');
     if (audioModeInfoClose) {
-        audioModeInfoClose.addEventListener('click', function() {
+        audioModeInfoClose.addEventListener('click', function () {
             document.getElementById('audio-mode-info-overlay').classList.remove('show');
         });
     }
 
     const audioModeInfoOverlay = document.getElementById('audio-mode-info-overlay');
     if (audioModeInfoOverlay) {
-        audioModeInfoOverlay.addEventListener('click', function(e) {
+        audioModeInfoOverlay.addEventListener('click', function (e) {
             if (e.target === audioModeInfoOverlay) {
                 audioModeInfoOverlay.classList.remove('show');
             }
@@ -1274,7 +1274,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 async function clearCache() {
     try {
-        localStorage.clear();
+        // Remove only app-specific keys to avoid wiping unrelated site data
+        try {
+            const keys = Object.keys(localStorage);
+            for (const key of keys) {
+                if (key && key.indexOf('abrahangs_') === 0) {
+                    localStorage.removeItem(key);
+                }
+            }
+        } catch (e) {
+            // Fallback: if anything goes wrong, avoid deleting everything
+            console.warn('Failed to selectively clear localStorage:', e);
+        }
         if ('caches' in window) {
             const cacheNames = await caches.keys();
             await Promise.all(cacheNames.map(name => caches.delete(name)));

@@ -23,8 +23,16 @@ const urlsToCache = [
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                return cache.addAll(urlsToCache);
+            .then(async cache => {
+                // Attempt to cache each resource but don't fail the install
+                // if one or more resources cannot be cached (network errors / 404s).
+                const results = await Promise.allSettled(
+                    urlsToCache.map(url => cache.add(url).catch(err => {
+                        console.warn('Failed to cache', url, err);
+                        return null;
+                    }))
+                );
+                return results;
             })
             .then(() => self.skipWaiting())
     );
@@ -51,13 +59,8 @@ self.addEventListener('fetch', event => {
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+            const toDelete = cacheNames.filter(name => name !== CACHE_NAME);
+            return Promise.all(toDelete.map(name => caches.delete(name)));
         })
     );
 });
