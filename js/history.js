@@ -4,6 +4,15 @@ let selectedLogs = new Set();
 // Cache DOM elements
 let elements = {};
 
+function applyDarkMode() {
+    const darkModeEnabled = localStorage.getItem('abrahangs_dark_mode') === 'true';
+    if (darkModeEnabled) {
+        document.documentElement.classList.add('dark-mode');
+    } else {
+        document.documentElement.classList.remove('dark-mode');
+    }
+}
+
 function cacheElements() {
     elements = {
         logsList: document.getElementById('logs-list'),
@@ -136,6 +145,7 @@ function goHome() {
 
 // Load logs on page load
 document.addEventListener('DOMContentLoaded', function () {
+    applyDarkMode();
     cacheElements();
     loadLogs();
 });

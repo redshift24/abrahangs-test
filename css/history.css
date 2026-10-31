@@ -7,12 +7,32 @@
     --color-text-secondary: #8e8e93;
     --color-white: #fff;
     --color-selected: #fff5e6;
+    --color-input-bg: #fff;
+    --color-input-border: #d1d1d6;
+    --color-toggle-bg: #d1d1d6;
+    --color-toggle-active: #30d158;
+    --color-overlay: rgba(0, 0, 0, 0.5);
     --radius-sm: 12px;
     --radius-md: 16px;
     --radius-lg: 50%;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.2);
     --transition: all 0.2s;
+}
+
+.dark-mode {
+    --color-bg: #000;
+    --color-text: #fff;
+    --color-text-secondary: #8e8e93;
+    --color-white: #1c1c1e;
+    --color-selected: #1c1c1e;
+    --color-input-bg: #1c1c1e;
+    --color-input-border: #38383a;
+    --color-toggle-bg: #38383a;
+    --color-toggle-active: #30d158;
+    --color-overlay: rgba(0, 0, 0, 0.8);
+    --color-confirm-bg: #e53935;
+    --color-confirm-text: #fff;
 }
 
 * {
@@ -31,13 +51,17 @@ body {
     align-items: center;
 }
 
+html {
+    background: var(--color-bg);
+}
+
 #app {
     width: 100%;
     max-width: 400px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: var(--color-white);
+    background: var(--color-bg);
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -287,4 +311,9 @@ body {
 .modal-btn.confirm {
     background: var(--color-danger);
     color: var(--color-white);
+}
+
+.dark-mode .modal-btn.confirm {
+    background: var(--color-confirm-bg);
+    color: var(--color-confirm-text);
 }

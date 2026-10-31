@@ -25,6 +25,9 @@ let restTime = 20;
 // Auto continue setting
 let autoContinue = true;
 
+// Dark mode setting
+let darkModeEnabled = false;
+
 // Timestamp for delayed set-dots transition during rest period
 let restDotsTransitionTime = 0;
 
@@ -72,6 +75,7 @@ function cacheElements() {
         toast: document.getElementById('toast')
     };
     elements.autoContinueToggle = document.getElementById('auto-continue-toggle');
+    elements.darkModeToggle = document.getElementById('dark-mode-toggle');
 }
 
 function saveWorkoutLog() {
@@ -433,7 +437,8 @@ function showSettings() {
     const autoContinueToggle = document.getElementById('auto-continue-toggle');
     const soundSelect = document.getElementById('countdown-sound-select');
     const volumeSlider = document.getElementById('volume-slider');
-    if (overlay && hangInput && restInput) {
+    const soundToggle = document.getElementById('sound-toggle');
+    if (overlay && hangInput) {
         hangInput.value = hangTime;
         restInput.value = restTime;
         if (autoContinueToggle) {
@@ -449,9 +454,12 @@ function showSettings() {
         if (volumeSlider) {
             updateCustomVolumeSlider(Math.round(volume * 100));
         }
-        const soundToggle = document.getElementById('sound-toggle');
         if (soundToggle) {
             soundToggle.checked = soundEnabled;
+        }
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        if (darkModeToggle) {
+            darkModeToggle.checked = darkModeEnabled;
         }
         const audioSessionSelect = document.getElementById('audio-session-select');
         if (audioSessionSelect) {
@@ -528,6 +536,12 @@ function saveSettings() {
         localStorage.setItem('abrahangs_audio_session_mode', audioSessionMode);
         initAudioSession();
     }
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    if (darkModeToggle) {
+        darkModeEnabled = darkModeToggle.checked;
+        localStorage.setItem('abrahangs_dark_mode', darkModeEnabled ? 'true' : 'false');
+        applyDarkMode();
+    }
     showToast('Settings saved!');
     hideSettings();
     updateUI();
@@ -551,6 +565,11 @@ function loadSettings() {
     const storedAutoContinue = localStorage.getItem('abrahangs_auto_continue');
     if (storedAutoContinue !== null) {
         autoContinue = storedAutoContinue === 'true';
+    }
+    const storedDarkMode = localStorage.getItem('abrahangs_dark_mode');
+    if (storedDarkMode !== null) {
+        darkModeEnabled = storedDarkMode === 'true';
+        applyDarkMode();
     }
     const storedSound = localStorage.getItem('abrahangs_countdown_sound');
     if (storedSound) {
@@ -595,6 +614,14 @@ function updateCustomVolumeSlider(percent) {
     }
     if (valueText) {
         valueText.textContent = clampedPercent + '%';
+    }
+}
+
+function applyDarkMode() {
+    if (darkModeEnabled) {
+        document.documentElement.classList.add('dark-mode');
+    } else {
+        document.documentElement.classList.remove('dark-mode');
     }
 }
 
@@ -993,6 +1020,11 @@ document.addEventListener('DOMContentLoaded', function () {
         settingsBtn.addEventListener('click', showSettings);
     }
 
+    const durationBadgeBtn = document.getElementById('duration-badge-btn');
+    if (durationBadgeBtn) {
+        durationBadgeBtn.addEventListener('click', showSettings);
+    }
+
     const settingsOverlay = document.getElementById('settings-overlay');
     if (settingsOverlay) {
         settingsOverlay.addEventListener('click', function (e) {
@@ -1024,10 +1056,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const clearCacheConfirm = document.getElementById('clear-cache-confirm');
     if (clearCacheConfirm) {
-        clearCacheConfirm.addEventListener('click', function () {
+        clearCacheConfirm.addEventListener('click', async function () {
             document.getElementById('clear-cache-modal').classList.remove('show');
             stop();
-            clearCache();
+            await clearCache();
         });
     }
 
@@ -1074,6 +1106,15 @@ document.addEventListener('DOMContentLoaded', function () {
         soundToggle.addEventListener('change', function () {
             soundEnabled = soundToggle.checked;
             localStorage.setItem('abrahangs_sound_enabled', soundEnabled ? 'true' : 'false');
+        });
+    }
+
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('change', function () {
+            darkModeEnabled = darkModeToggle.checked;
+            localStorage.setItem('abrahangs_dark_mode', darkModeEnabled ? 'true' : 'false');
+            applyDarkMode();
         });
     }
 
@@ -1183,6 +1224,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const soundInfoIcon = document.getElementById('sound-info-icon');
     if (soundInfoIcon) {
         soundInfoIcon.addEventListener('click', function () {
+            document.getElementById('sound-info-overlay').classList.add('show');
+        });
+    }
+
+    const instructionsInfoIcon = document.getElementById('instructions-info-icon');
+    if (instructionsInfoIcon) {
+        instructionsInfoIcon.addEventListener('click', function () {
             document.getElementById('sound-info-overlay').classList.add('show');
         });
     }
