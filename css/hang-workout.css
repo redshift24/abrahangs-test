@@ -60,12 +60,12 @@ html {
 
 #app {
     width: 100%;
-    max-width: 400px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background: var(--color-white);
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+    margin: 0;
 }
 
 @media (min-width: 401px) {
@@ -699,9 +699,9 @@ html {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: flex-start;
-    padding: 0px 16px 16px;
+    padding: 0px 0px 16px;
     text-align: center;
     min-height: 0;
     overflow-y: auto;
@@ -721,38 +721,23 @@ html {
 
 .exercise-image {
     width: 100%;
-    max-width: 260px;
     aspect-ratio: 1;
     background: var(--color-bg);
-    border-radius: var(--radius-md);
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
     position: relative;
     overflow: hidden;
-    max-height: 40vh;
-}
-
-@media (max-width: 380px) {
-    .exercise-image {
-        max-width: 240px;
-        max-height: 35vh;
-    }
-}
-
-@media (max-width: 320px) {
-    .exercise-image {
-        max-width: 200px;
-        max-height: 30vh;
-    }
+    max-height: 50vh;
 }
 
 #exercise-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: var(--radius-md);
+    border-radius: 0;
 }
 
 .hang-number-overlay {
