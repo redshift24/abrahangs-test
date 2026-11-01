@@ -701,50 +701,50 @@ html {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 0px 20px 20px;
+    padding: 0px 16px 16px;
     text-align: center;
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    height: 100dvh;
+    max-height: 100dvh;
 }
 
 .current-exercise {
-    margin-bottom: 20px;
     width: 100%;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 12px;
 }
 
 .exercise-image {
     width: 100%;
-    max-width: 320px;
+    max-width: 260px;
     aspect-ratio: 1;
     background: var(--color-bg);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 16px;
+    margin-bottom: 12px;
     position: relative;
     overflow: hidden;
-    left: 0;
-    right: 0;
-    max-height: 50vh;
+    max-height: 40dvh;
 }
 
 @media (max-width: 380px) {
     .exercise-image {
-        max-width: 280px;
-        max-height: 45vh;
+        max-width: 240px;
+        max-height: 35dvh;
     }
 }
 
 @media (max-width: 320px) {
     .exercise-image {
-        max-width: 240px;
-        max-height: 40vh;
+        max-width: 200px;
+        max-height: 30dvh;
     }
 }
 
@@ -839,7 +839,7 @@ html {
 }
 
 .timer-section {
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     width: 100%;
 }
 
@@ -847,18 +847,18 @@ html {
     font-size: 18px;
     font-weight: 600;
     color: var(--color-primary);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-align: center;
     min-height: 24px;
 }
 
 .timer-display {
-    font-size: 72px;
+    font-size: 64px;
     font-weight: 700;
     font-family: 'SF Mono', Monaco, monospace;
     color: var(--color-primary);
     line-height: 1;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .timer-display.green {
@@ -866,25 +866,14 @@ html {
 }
 
 .set-dots {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    margin-bottom: 8px;
+    gap: 8px;
 }
 
 .set-dot {
-    width: 44px;
-    height: 44px;
-    border-radius: var(--radius-lg);
-    border: 2px solid var(--color-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-text);
-    background: var(--color-white);
-    transition: all 0.3s;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
 }
 
 .set-dot.completed {
@@ -901,8 +890,8 @@ html {
 
 .control-buttons {
     display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-bottom: 8px;
     justify-content: center;
     align-items: center;
 }
