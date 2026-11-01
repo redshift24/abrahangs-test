@@ -250,6 +250,7 @@ html {
     max-width: 340px;
     max-height: 90vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
     text-align: center;
     -webkit-overflow-scrolling: touch;
 }
@@ -720,10 +721,12 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin: 0 auto 16px;
     position: relative;
     overflow: hidden;
-    align-self: center;
+    left: 0;
+    right: 0;
+    transform: none;
 }
 
 @media (max-width: 380px) {

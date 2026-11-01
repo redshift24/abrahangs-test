@@ -466,6 +466,7 @@ function showSettings() {
             audioSessionSelect.value = audioSessionMode;
         }
         overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
     if (elements.durationBadge) {
         elements.durationBadge.textContent = `${hangTime}s per hang`;
@@ -476,6 +477,7 @@ function hideSettings() {
     const overlay = document.getElementById('settings-overlay');
     if (overlay) {
         overlay.classList.remove('show');
+        document.body.style.overflow = '';
     }
 }
 
