@@ -55,6 +55,13 @@
         </div>
 
         <div class="history-content">
+            <div class="year-month-filter">
+                <label for="filter-select" class="filter-label">Filter by Year/Month</label>
+                <select id="filter-select" class="filter-select" aria-label="Filter by year and month">
+                    <option value="all">All Time</option>
+                </select>
+            </div>
+
             <div id="empty-state" class="empty-state" style="display: none;">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -63,13 +70,6 @@
                 </svg>
                 <h2>No workout history yet</h2>
                 <p>Complete a workout to see it here</p>
-            </div>
-
-            <div class="year-month-filter">
-                <label for="filter-select" class="filter-label">Filter by Year/Month</label>
-                <select id="filter-select" class="filter-select" aria-label="Filter by year and month">
-                    <option value="all">All Time</option>
-                </select>
             </div>
 
             <div id="logs-list" class="logs-list"></div>

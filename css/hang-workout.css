@@ -248,7 +248,10 @@ html {
     padding: 24px;
     width: 100%;
     max-width: 340px;
+    max-height: 90vh;
+    overflow-y: auto;
     text-align: center;
+    -webkit-overflow-scrolling: touch;
 }
 
 .settings-modal h2 {
@@ -710,6 +713,7 @@ html {
 
 .exercise-image {
     width: 100%;
+    max-width: 320px;
     aspect-ratio: 1;
     background: var(--color-bg);
     border-radius: var(--radius-md);
@@ -719,11 +723,18 @@ html {
     margin-bottom: 16px;
     position: relative;
     overflow: hidden;
+    align-self: center;
+}
+
+@media (max-width: 380px) {
+    .exercise-image {
+        max-width: 280px;
+    }
 }
 
 @media (max-width: 320px) {
     .exercise-image {
-        width: 90%;
+        max-width: 240px;
     }
 }
 
@@ -927,19 +938,21 @@ html {
 .pause-btn {
     background: var(--color-bg);
     color: var(--color-text);
+    border: 1px solid var(--color-input-border);
 }
 
 .pause-btn:hover {
-    background: #e5e5ea;
+    background: var(--color-input-border);
 }
 
 .stop-btn {
     background: var(--color-bg);
     color: var(--color-text);
+    border: 1px solid var(--color-input-border);
 }
 
 .stop-btn:hover {
-    background: #e5e5ea;
+    background: var(--color-input-border);
 }
 
 .next-rep-btn {
@@ -956,14 +969,50 @@ html {
     transition: background 0.2s;
     -webkit-tap-highlight-color: transparent;
     box-shadow: var(--shadow);
+    border: 1px solid var(--color-input-border);
 }
 
 .next-rep-btn:hover {
-    background: #e5e5ea;
+    background: var(--color-input-border);
 }
 
 .next-rep-btn:active {
     transform: scale(0.95);
+}
+
+.dark-mode .play-btn {
+    background: var(--color-primary);
+    color: #000;
+}
+
+.dark-mode .pause-btn {
+    background: #38383a;
+    color: var(--color-text);
+    border: 1px solid #6d6d70;
+}
+
+.dark-mode .pause-btn:hover {
+    background: #4d4d4f;
+}
+
+.dark-mode .stop-btn {
+    background: #38383a;
+    color: var(--color-text);
+    border: 1px solid #6d6d70;
+}
+
+.dark-mode .stop-btn:hover {
+    background: #4d4d4f;
+}
+
+.dark-mode .next-rep-btn {
+    background: #38383a;
+    color: var(--color-text);
+    border: 1px solid #6d6d70;
+}
+
+.dark-mode .next-rep-btn:hover {
+    background: #4d4d4f;
 }
 
 /* Toast notification */
