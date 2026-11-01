@@ -706,8 +706,8 @@ html {
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    height: 100dvh;
-    max-height: 100dvh;
+    height: 100vh;
+    max-height: 100vh;
 }
 
 .current-exercise {
@@ -731,20 +731,20 @@ html {
     margin-bottom: 12px;
     position: relative;
     overflow: hidden;
-    max-height: 40dvh;
+    max-height: 40vh;
 }
 
 @media (max-width: 380px) {
     .exercise-image {
         max-width: 240px;
-        max-height: 35dvh;
+        max-height: 35vh;
     }
 }
 
 @media (max-width: 320px) {
     .exercise-image {
         max-width: 200px;
-        max-height: 30dvh;
+        max-height: 30vh;
     }
 }
 

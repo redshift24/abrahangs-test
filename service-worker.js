@@ -1,4 +1,4 @@
-const CACHE_NAME = 'abrahangs-v8';
+const CACHE_NAME = 'abrahangs-v9';
 const urlsToCache = [
     './',
     './hang-workout.html',
