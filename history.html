@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#ff9500">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Abrahangs">
     <link rel="manifest" href="manifest.json">
@@ -28,40 +27,17 @@
 <body>
     <div id="app">
         <div class="app-header">
-            <h1 class="header-title">History</h1>
-            <div class="header-icons">
-                <button class="icon-btn select-toggle" id="select-all-btn" aria-label="Select all">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                </button>
-                <button class="icon-btn" id="download-btn" aria-label="Download history">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                </button>
-                <button class="icon-btn" id="home-btn" aria-label="Go to workout">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                    </svg>
-                </button>
-            </div>
+            <h1>Abrahangs</h1>
+            <button class="home-btn" onclick="goHome()" aria-label="Go to workout">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </button>
         </div>
 
         <div class="history-content">
-            <div class="year-month-filter">
-                <label for="filter-select" class="filter-label">Filter by Year/Month</label>
-                <select id="filter-select" class="filter-select" aria-label="Filter by year and month">
-                    <option value="all">All Time</option>
-                </select>
-            </div>
-
             <div id="empty-state" class="empty-state" style="display: none;">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -76,7 +52,7 @@
         </div>
 
         <div id="delete-bar" class="delete-bar" style="display: none;">
-            <button class="delete-btn">
+            <button class="delete-btn" onclick="confirmDelete()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
                     <polyline points="3 6 5 6 21 6"></polyline>

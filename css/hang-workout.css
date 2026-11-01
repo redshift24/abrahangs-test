@@ -248,10 +248,7 @@ html {
     padding: 24px;
     width: 100%;
     max-width: 340px;
-    max-height: 90vh;
-    overflow-y: auto;
     text-align: center;
-    -webkit-overflow-scrolling: touch;
 }
 
 .settings-modal h2 {
@@ -473,34 +470,10 @@ html {
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: var(--transition);
 }
 
-.settings-clear-btn:hover {
-    background: #d1d1d6;
-}
-
-.dark-mode .settings-clear-btn {
-    background: #38383a;
-    color: var(--color-text);
-    border: 1px solid #6d6d70;
-}
-
-.dark-mode .settings-clear-btn:hover {
-    background: #4d4d4f;
-}
-
-.dark-mode .info-icon {
-    background: var(--color-input-border);
-    color: var(--color-text-secondary);
-}
-
-.dark-mode .info-icon:hover {
-    background: var(--color-toggle-bg);
-}
-
-.dark-mode .info-icon:active {
-    background: var(--color-toggle-active);
+.settings-clear-btn:active {
+    transform: scale(0.98);
 }
 
 .sound-label-row {
@@ -517,23 +490,18 @@ html {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: var(--color-input-border);
-    color: var(--color-text-secondary);
+    background: #d1d1d6;
+    color: #8e8e93;
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     flex-shrink: 0;
-    transition: var(--transition);
-}
-
-.info-icon:hover {
-    background: var(--color-toggle-bg);
 }
 
 .info-icon:active {
-    background: var(--color-toggle-active);
+    background: #c7c7cc;
 }
 
 .info-popup-overlay {
@@ -646,11 +614,6 @@ html {
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: var(--transition);
-}
-
-.modal-btn:hover {
-    transform: scale(1.02);
 }
 
 .modal-btn.cancel {
@@ -658,40 +621,13 @@ html {
     color: var(--color-text);
 }
 
-.modal-btn.cancel:hover {
-    background: #d1d1d6;
-}
-
 .modal-btn.confirm {
     background: #ff3b30;
     color: white;
 }
 
-.modal-btn.confirm:hover {
-    background: #e02e22;
-}
-
 .modal-btn:active {
     transform: scale(0.98);
-}
-
-.dark-mode .modal-btn.cancel {
-    background: #38383a;
-    color: var(--color-text);
-    border: 1px solid #6d6d70;
-}
-
-.dark-mode .modal-btn.cancel:hover {
-    background: #4d4d4f;
-}
-
-.dark-mode .modal-btn.confirm {
-    background: #ff453a;
-    color: white;
-}
-
-.dark-mode .modal-btn.confirm:hover {
-    background: #e63c31;
 }
 
 .workout-content {
@@ -713,7 +649,6 @@ html {
 
 .exercise-image {
     width: 100%;
-    max-width: 320px;
     aspect-ratio: 1;
     background: var(--color-bg);
     border-radius: var(--radius-md);
@@ -723,18 +658,11 @@ html {
     margin-bottom: 16px;
     position: relative;
     overflow: hidden;
-    align-self: center;
-}
-
-@media (max-width: 380px) {
-    .exercise-image {
-        max-width: 280px;
-    }
 }
 
 @media (max-width: 320px) {
     .exercise-image {
-        max-width: 240px;
+        width: 90%;
     }
 }
 
@@ -760,11 +688,6 @@ html {
     font-size: 16px;
     font-weight: 700;
     line-height: 1;
-}
-
-.dark-mode .hang-number-overlay {
-    background: rgba(0, 0, 0, 0.7);
-    color: #fff;
 }
 
 .current-exercise h2 {
@@ -938,21 +861,19 @@ html {
 .pause-btn {
     background: var(--color-bg);
     color: var(--color-text);
-    border: 1px solid var(--color-input-border);
 }
 
 .pause-btn:hover {
-    background: var(--color-input-border);
+    background: #e5e5ea;
 }
 
 .stop-btn {
     background: var(--color-bg);
     color: var(--color-text);
-    border: 1px solid var(--color-input-border);
 }
 
 .stop-btn:hover {
-    background: var(--color-input-border);
+    background: #e5e5ea;
 }
 
 .next-rep-btn {
@@ -969,50 +890,14 @@ html {
     transition: background 0.2s;
     -webkit-tap-highlight-color: transparent;
     box-shadow: var(--shadow);
-    border: 1px solid var(--color-input-border);
 }
 
 .next-rep-btn:hover {
-    background: var(--color-input-border);
+    background: #e5e5ea;
 }
 
 .next-rep-btn:active {
     transform: scale(0.95);
-}
-
-.dark-mode .play-btn {
-    background: var(--color-primary);
-    color: #000;
-}
-
-.dark-mode .pause-btn {
-    background: #38383a;
-    color: var(--color-text);
-    border: 1px solid #6d6d70;
-}
-
-.dark-mode .pause-btn:hover {
-    background: #4d4d4f;
-}
-
-.dark-mode .stop-btn {
-    background: #38383a;
-    color: var(--color-text);
-    border: 1px solid #6d6d70;
-}
-
-.dark-mode .stop-btn:hover {
-    background: #4d4d4f;
-}
-
-.dark-mode .next-rep-btn {
-    background: #38383a;
-    color: var(--color-text);
-    border: 1px solid #6d6d70;
-}
-
-.dark-mode .next-rep-btn:hover {
-    background: #4d4d4f;
 }
 
 /* Toast notification */
