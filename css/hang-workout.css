@@ -868,12 +868,21 @@ html {
 .set-dots {
     margin-bottom: 8px;
     gap: 8px;
+    display: flex;
+    justify-content: center;
 }
 
 .set-dot {
     width: 36px;
     height: 36px;
     font-size: 14px;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    transition: all 0.3s;
 }
 
 .set-dot.completed {
