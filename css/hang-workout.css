@@ -470,10 +470,34 @@ html {
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    transition: var(--transition);
 }
 
-.settings-clear-btn:active {
-    transform: scale(0.98);
+.settings-clear-btn:hover {
+    background: #d1d1d6;
+}
+
+.dark-mode .settings-clear-btn {
+    background: #38383a;
+    color: var(--color-text);
+    border: 1px solid #6d6d70;
+}
+
+.dark-mode .settings-clear-btn:hover {
+    background: #4d4d4f;
+}
+
+.dark-mode .info-icon {
+    background: var(--color-input-border);
+    color: var(--color-text-secondary);
+}
+
+.dark-mode .info-icon:hover {
+    background: var(--color-toggle-bg);
+}
+
+.dark-mode .info-icon:active {
+    background: var(--color-toggle-active);
 }
 
 .sound-label-row {
@@ -490,18 +514,23 @@ html {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    background: #d1d1d6;
-    color: #8e8e93;
+    background: var(--color-input-border);
+    color: var(--color-text-secondary);
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.info-icon:hover {
+    background: var(--color-toggle-bg);
 }
 
 .info-icon:active {
-    background: #c7c7cc;
+    background: var(--color-toggle-active);
 }
 
 .info-popup-overlay {
@@ -614,6 +643,11 @@ html {
     font-weight: 600;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
+    transition: var(--transition);
+}
+
+.modal-btn:hover {
+    transform: scale(1.02);
 }
 
 .modal-btn.cancel {
@@ -621,13 +655,40 @@ html {
     color: var(--color-text);
 }
 
+.modal-btn.cancel:hover {
+    background: #d1d1d6;
+}
+
 .modal-btn.confirm {
     background: #ff3b30;
     color: white;
 }
 
+.modal-btn.confirm:hover {
+    background: #e02e22;
+}
+
 .modal-btn:active {
     transform: scale(0.98);
+}
+
+.dark-mode .modal-btn.cancel {
+    background: #38383a;
+    color: var(--color-text);
+    border: 1px solid #6d6d70;
+}
+
+.dark-mode .modal-btn.cancel:hover {
+    background: #4d4d4f;
+}
+
+.dark-mode .modal-btn.confirm {
+    background: #ff453a;
+    color: white;
+}
+
+.dark-mode .modal-btn.confirm:hover {
+    background: #e63c31;
 }
 
 .workout-content {
@@ -688,6 +749,11 @@ html {
     font-size: 16px;
     font-weight: 700;
     line-height: 1;
+}
+
+.dark-mode .hang-number-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
 }
 
 .current-exercise h2 {
