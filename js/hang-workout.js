@@ -467,6 +467,14 @@ function showSettings() {
         }
         overlay.classList.add('show');
         document.body.style.overflow = 'hidden';
+        // Scroll to top of settings modal when opening
+        const modal = document.getElementById('settings-overlay');
+        if (modal) {
+            const modalInner = modal.querySelector('.settings-modal');
+            if (modalInner) {
+                modalInner.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
     }
     if (elements.durationBadge) {
         elements.durationBadge.textContent = `${hangTime}s per hang`;
@@ -478,6 +486,14 @@ function hideSettings() {
     if (overlay) {
         overlay.classList.remove('show');
         document.body.style.overflow = '';
+        // Reset scroll position when closing
+        const modal = document.getElementById('settings-overlay');
+        if (modal) {
+            const modalInner = modal.querySelector('.settings-modal');
+            if (modalInner) {
+                modalInner.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
     }
 }
 

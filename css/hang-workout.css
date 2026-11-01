@@ -250,6 +250,7 @@ html {
     max-width: 340px;
     max-height: 90vh;
     overflow-y: auto;
+    overscroll-behavior: contain;
     text-align: center;
     -webkit-overflow-scrolling: touch;
 }
